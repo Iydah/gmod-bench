@@ -5,3 +5,6 @@ dist/
 *.log
 .env
 .env.*
+
+# brand-cards.mjs default output
+scripts/compose/

@@ -1,6 +1,8 @@
 node_modules/
 .gmod-bench/
 coverage/
+# Stray local tool output
+target/
 *.log
 .env
 .env.*
