@@ -589,9 +589,9 @@ const enriched = models.map((m, index) => {
                         role="presentation"
                         aria-hidden="true"
                       >
-                        <span
+                        <svg
                           class="lb-metric__fill lb-metric__fill--pass"
-                          style={`width:${m.bars.pass}%`}
+                          width={`${m.bars.pass.toFixed(2)}%`}
                         />
                       </div>
                       <p class="lb-metric__sub">
@@ -611,9 +611,9 @@ const enriched = models.map((m, index) => {
                         role="presentation"
                         aria-hidden="true"
                       >
-                        <span
+                        <svg
                           class="lb-metric__fill lb-metric__fill--cover"
-                          style={`width:${m.bars.cover}%`}
+                          width={`${m.bars.cover.toFixed(2)}%`}
                         />
                       </div>
                       <p class="lb-metric__sub">
@@ -634,9 +634,9 @@ const enriched = models.map((m, index) => {
                         role="presentation"
                         aria-hidden="true"
                       >
-                        <span
+                        <svg
                           class="lb-metric__fill lb-metric__fill--quality"
-                          style={`width:${m.bars.score}%`}
+                          width={`${m.bars.score.toFixed(2)}%`}
                         />
                       </div>
                       <p class="lb-metric__sub">
@@ -663,9 +663,9 @@ const enriched = models.map((m, index) => {
                         role="presentation"
                         aria-hidden="true"
                       >
-                        <span
+                        <svg
                           class="lb-metric__fill lb-metric__fill--k"
-                          style={`width:${m.passAtKRate != null ? m.bars.passAtK : m.bars.fixtures}%`}
+                          width={`${(m.passAtKRate != null ? m.bars.passAtK : m.bars.fixtures).toFixed(2)}%`}
                         />
                       </div>
                       <p class="lb-metric__sub">
@@ -689,39 +689,39 @@ const enriched = models.map((m, index) => {
                         aria-label={`Outcomes: ${m.pass} pass, ${m.partial} partial, ${m.incorrect} wrong, ${m.protocol_error} invalid output${m.other ? `, ${m.other} other` : ""}`}
                       >
                         {m.pass > 0 && (
-                          <span
+                          <svg
                             class="lb-outcome-bar__seg lb-outcome-bar__seg--pass"
-                            style={`width:${m.outcomeShares.pass}`}
+                            width={m.outcomeShares.pass}
                           />
                         )}
                         {m.partial > 0 && (
-                          <span
+                          <svg
                             class="lb-outcome-bar__seg lb-outcome-bar__seg--partial"
-                            style={`width:${m.outcomeShares.partial}`}
+                            width={m.outcomeShares.partial}
                           />
                         )}
                         {m.incorrect > 0 && (
-                          <span
+                          <svg
                             class="lb-outcome-bar__seg lb-outcome-bar__seg--wrong"
-                            style={`width:${m.outcomeShares.wrong}`}
+                            width={m.outcomeShares.wrong}
                           />
                         )}
                         {m.protocol_error > 0 && (
-                          <span
+                          <svg
                             class="lb-outcome-bar__seg lb-outcome-bar__seg--format"
-                            style={`width:${m.outcomeShares.format}`}
+                            width={m.outcomeShares.format}
                           />
                         )}
                         {m.other > 0 && (
-                          <span
+                          <svg
                             class="lb-outcome-bar__seg lb-outcome-bar__seg--other"
-                            style={`width:${m.outcomeShares.other}`}
+                            width={m.outcomeShares.other}
                           />
                         )}
                         {m.residual > 0 && (
-                          <span
+                          <svg
                             class="lb-outcome-bar__seg lb-outcome-bar__seg--residual"
-                            style={`width:${m.outcomeShares.residual}`}
+                            width={m.outcomeShares.residual}
                           />
                         )}
                       </div>
@@ -791,7 +791,7 @@ const enriched = models.map((m, index) => {
                             <span class="lb-funnel__n">{m.attempts}</span>
                           </div>
                           <span class="lb-funnel__bar" aria-hidden="true">
-                            <span class="lb-funnel__fill" style="width:100%" />
+                            <svg class="lb-funnel__fill" width="100%" />
                           </span>
                         </li>
                         <li class="lb-funnel__step">
@@ -800,9 +800,9 @@ const enriched = models.map((m, index) => {
                             <span class="lb-funnel__n">{m.scored}</span>
                           </div>
                           <span class="lb-funnel__bar" aria-hidden="true">
-                            <span
+                            <svg
                               class="lb-funnel__fill lb-funnel__fill--mid"
-                              style={`width:${sharePct(m.scored, m.attempts)}`}
+                              width={sharePct(m.scored, m.attempts)}
                             />
                           </span>
                         </li>
@@ -812,9 +812,9 @@ const enriched = models.map((m, index) => {
                             <span class="lb-funnel__n">{m.pass}</span>
                           </div>
                           <span class="lb-funnel__bar" aria-hidden="true">
-                            <span
+                            <svg
                               class="lb-funnel__fill lb-funnel__fill--ok"
-                              style={`width:${sharePct(m.pass, m.attempts)}`}
+                              width={sharePct(m.pass, m.attempts)}
                             />
                           </span>
                         </li>
@@ -827,9 +827,9 @@ const enriched = models.map((m, index) => {
                               </span>
                             </div>
                             <span class="lb-funnel__bar" aria-hidden="true">
-                              <span
+                              <svg
                                 class="lb-funnel__fill lb-funnel__fill--accent"
-                                style={`width:${m.bars.fixtures}%`}
+                                width={`${m.bars.fixtures.toFixed(2)}%`}
                               />
                             </span>
                           </li>

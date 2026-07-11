@@ -1,6 +1,7 @@
 export interface LeaderboardRow {
   rank: number | null;
-  rankingStatus?: "insufficient-coverage";
+  /** Comes from generated JSON; "insufficient-coverage" is the only value emitted today. */
+  rankingStatus?: string;
   adapterId: string;
   model: string;
   label: string;

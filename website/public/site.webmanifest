@@ -1,7 +1,8 @@
 {
   "name": "gmod-bench",
   "short_name": "gmod-bench",
-  "description": "Strict local scoring for short Garry's Mod answers.",
+  "description": "gmod-bench tests how well AI models write real Garry's Mod Lua, so you can choose the right model for your next addon.",
+  "id": "/",
   "start_url": "/",
   "display": "browser",
   "background_color": "#0a0a0a",
