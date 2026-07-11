@@ -1,49 +1,40 @@
 <div align="center">
 
-<img src="website/public/gmod-logo.svg" alt="gmod-bench" width="96" height="96" />
-
-# gmod-bench
-
-### Find the best AI models for Garry's Mod development
-
-Open coding challenges · verified scores · public evidence
-
-<br />
-
-[![Website](https://img.shields.io/badge/🌐_Website-gmodbench.com-70a3f3?style=for-the-badge&labelColor=0a0a0a)](https://gmodbench.com)
-[![GitHub stars](https://img.shields.io/github/stars/Iydah/gmod-bench?style=for-the-badge&logo=github&logoColor=white&color=e8b84a&labelColor=0a0a0a)](https://github.com/Iydah/gmod-bench/stargazers)
-[![License: MIT](https://img.shields.io/badge/License-MIT-3ecf8e?style=for-the-badge&labelColor=0a0a0a)](LICENSE)
-[![Bun](https://img.shields.io/badge/Runtime-Bun-fbf0df?style=for-the-badge&logo=bun&logoColor=000&labelColor=0a0a0a)](https://bun.sh)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0a0a)](https://www.typescriptlang.org/)
-
-<br />
-
-[![⭐ Star this repo](https://img.shields.io/badge/⭐_Star_this_repo-if_you_ship_GMod-111111?style=for-the-badge&labelColor=e8b84a&color=111111)](https://github.com/Iydah/gmod-bench)
-&nbsp;
-[![Open leaderboard](https://img.shields.io/badge/Open_leaderboard-→-70a3f3?style=for-the-badge&labelColor=0a0a0a)](https://gmodbench.com)
-
-<br />
-
 <a href="https://gmodbench.com">
-  <img src="website/public/social-card.png" alt="gmod-bench — compare AI models for Garry's Mod" width="720" />
+  <img src="website/public/readme-hero.png" alt="gmod-bench — which AI model actually writes good GLua?" width="820" />
 </a>
 
+<h1>gmod-bench</h1>
+
+<p><strong>Find the best AI models for Garry's Mod development.</strong></p>
+
+<p>Open coding challenges&nbsp; ·&nbsp; deterministic scoring&nbsp; ·&nbsp; public evidence</p>
+
 <p>
-  <a href="https://gmodbench.com"><strong>gmodbench.com</strong></a>
-  ·
+  <a href="https://gmodbench.com"><img src="https://img.shields.io/badge/Live_at-gmodbench.com-0081ff?style=for-the-badge&logo=cloudflare&logoColor=white&labelColor=0a0a0a" alt="Live at gmodbench.com" /></a>
+  <a href="https://github.com/Iydah/gmod-bench/stargazers"><img src="https://img.shields.io/github/stars/Iydah/gmod-bench?style=for-the-badge&logo=github&logoColor=white&color=f2b84b&labelColor=0a0a0a" alt="GitHub stars" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-42d392?style=for-the-badge&labelColor=0a0a0a" alt="License: MIT" /></a>
+  <a href="https://bun.sh"><img src="https://img.shields.io/badge/Bun-fbf0df?style=for-the-badge&logo=bun&logoColor=000&labelColor=0a0a0a" alt="Runtime: Bun" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-70a3f3?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0a0a" alt="TypeScript" /></a>
+</p>
+
+<p>
+  <a href="https://gmodbench.com"><b>🌐 gmodbench.com</b></a>
+  &nbsp;·&nbsp;
   <a href="https://gmodbench.com/leaderboard">Leaderboard</a>
-  ·
+  &nbsp;·&nbsp;
   <a href="https://gmodbench.com/runs">Runs</a>
-  ·
+  &nbsp;·&nbsp;
   <a href="https://gmodbench.com/methodology">Methodology</a>
-  ·
+  &nbsp;·&nbsp;
   <a href="https://gmodbench.com/docs">Docs</a>
 </p>
 
-<sub>
-  If this helps you pick a model for your next addon —
-  <a href="https://github.com/Iydah/gmod-bench/stargazers"><strong>a star means a lot ⭐</strong></a>
-</sub>
+<br />
+
+<a href="https://github.com/Iydah/gmod-bench/stargazers"><img src="https://img.shields.io/badge/⭐_Star_the_repo-if_it_helps_you_ship-0a0a0a?style=for-the-badge&labelColor=f2b84b" alt="Star the repo" /></a>
+&nbsp;
+<a href="https://gmodbench.com"><img src="https://img.shields.io/badge/Open_the_leaderboard-→-ffffff?style=for-the-badge&logo=rocket&logoColor=white&color=0081ff&labelColor=0a0a0a" alt="Open the leaderboard" /></a>
 
 </div>
 
@@ -51,41 +42,35 @@ Open coding challenges · verified scores · public evidence
 
 ## Why this exists
 
-GMod addon work is weird: realms, hooks, net messages, prediction, DarkRP quirks, hot-path HUD code. Generic model rankings don’t tell you **which model is actually good at GLua**.
+GMod addon work is its own dialect: realms, hooks, net messages, prediction, DarkRP quirks, hot-path HUD code. Generic model rankings don't tell you **which model is actually good at GLua**.
 
-**gmod-bench** runs models through real GMod coding challenges and scores them the same way every time — so you can answer:
+**gmod-bench** runs models through real GMod coding challenges and scores every answer the same way, every time — so you can answer the only question that matters:
 
-> *“Is this model better for my next addon?”*
+> _"Is this model better for my next addon?"_
 
-| What you get | Where |
-| --- | --- |
-| Live ranks | [gmodbench.com](https://gmodbench.com) |
-| Per-run evidence | [gmodbench.com/runs](https://gmodbench.com/runs) |
-| How scoring works | [gmodbench.com/methodology](https://gmodbench.com/methodology) |
-| This harness | clone · `bun install` · `bun run bench` |
+<table>
+<tr><td>🏆 &nbsp;<b>Live ranks</b></td><td><a href="https://gmodbench.com">gmodbench.com</a></td></tr>
+<tr><td>🔍 &nbsp;<b>Per-run evidence</b></td><td><a href="https://gmodbench.com/runs">gmodbench.com/runs</a></td></tr>
+<tr><td>📐 &nbsp;<b>How scoring works</b></td><td><a href="https://gmodbench.com/methodology">gmodbench.com/methodology</a></td></tr>
+<tr><td>⚙️ &nbsp;<b>This harness</b></td><td>clone · <code>bun install</code> · <code>bun run bench</code></td></tr>
+</table>
 
 Every prompt, scoring rule, model answer, and result is open for inspection.
 
 ---
 
-## Live site
+## 🌐 Live site — [gmodbench.com](https://gmodbench.com)
 
-<div align="center">
-
-### 🌐 [gmodbench.com](https://gmodbench.com)
-
-**Compare models · expand rows for evidence · open the runs that produced a rank**
+The leaderboard is live on Cloudflare. **Compare models, expand any row for the evidence, and open the exact runs that produced a rank.**
 
 | Surface | Link |
 | --- | --- |
-| Home & board | [gmodbench.com](https://gmodbench.com) |
+| Home & board | **[gmodbench.com](https://gmodbench.com)** |
 | Full leaderboard | [gmodbench.com/leaderboard](https://gmodbench.com/leaderboard) |
 | Published runs | [gmodbench.com/runs](https://gmodbench.com/runs) |
 | Scoring notes | [gmodbench.com/methodology](https://gmodbench.com/methodology) |
 
-</div>
-
-Models answer a **strict response format** so results stay comparable:
+Every model answers in one **strict response format**, so results stay comparable:
 
 ````text
 ```lua
@@ -118,7 +103,7 @@ The public suite covers three evidence classes:
 - **Micro-performance** — contract-equivalent choices with a measured or documented winner
 - **Production addon scenarios** — security, bounds, cleanup, network fanout, persistence, hot-path cost
 
-Performance answers are workload-specific. A one-off `ents.FindInSphere` and a per-tick query over addon-owned entities need different designs, so fixtures state frequency, ownership, bounds, and recipient scope when those facts change the correct answer. Unsafe or behavior-changing “faster” code cannot pass.
+Performance answers are workload-specific. A one-off `ents.FindInSphere` and a per-tick query over addon-owned entities need different designs, so fixtures state frequency, ownership, bounds, and recipient scope when those facts change the correct answer. Unsafe or behavior-changing "faster" code cannot pass.
 
 The benchmark does **not** execute generated GLua inside a live GMod server. Deterministic scorers validate the answer contract and fixture-specific rules. Read public results as strong regression / compliance evidence — not a guarantee that an arbitrary addon is production-safe.
 
@@ -241,10 +226,10 @@ bun run bench compare --run .gmod-bench/runs/<run-id> --model "Model A" --model 
 
 CLI support is **capability-probed at runtime**. An adapter is strict-scorable only when its installed help surface proves:
 
-1. one-shot, non-interactive execution  
-2. native denial of web / browser / file / shell / MCP tools  
-3. structured events with exactly one final response  
-4. a reviewed parser that fails closed on unknown shapes  
+1. one-shot, non-interactive execution
+2. native denial of web / browser / file / shell / MCP tools
+3. structured events with exactly one final response
+4. a reviewed parser that fails closed on unknown shapes
 
 ```sh
 bun run bench doctor
@@ -274,7 +259,7 @@ Provider calls can cost money. `doctor`, `list`, tests, typecheck, lint, report,
 
 ### Free-model quarantine
 
-Dead free endpoints that return empty answers get temporarily quarantined so they don’t burn the suite RPM budget:
+Dead free endpoints that return empty answers get temporarily quarantined so they don't burn the suite RPM budget:
 
 ```sh
 bun run bench quarantine
@@ -288,7 +273,7 @@ Disable models permanently via `runners.openrouter.disabledModels` in `gmod-benc
 
 ## Methodology
 
-Every scored attempt: **one final response, no tools**.
+Every scored attempt: **one final response, no tools.**
 
 ````text
 ```lua
@@ -297,10 +282,10 @@ Every scored attempt: **one final response, no tools**.
 Reason: <one line>
 ````
 
-- CLI attempts run in a fresh empty workspace with isolated profile/temp dirs  
-- Tool events, multiple finals, unknown traces, deadlines, output-cap breaches → non-scored (not “wrong GMod”)  
-- HTTP attempts are answer-only; `tool_calls` → `policy_violation`  
-- Prompts, rubrics, and provenance stay public; fixture IDs + rubric versions + prompt hashes keep old and new evidence distinct  
+- CLI attempts run in a fresh empty workspace with isolated profile/temp dirs
+- Tool events, multiple finals, unknown traces, deadlines, output-cap breaches → non-scored (not "wrong GMod")
+- HTTP attempts are answer-only; `tool_calls` → `policy_violation`
+- Prompts, rubrics, and provenance stay public; fixture IDs + rubric versions + prompt hashes keep old and new evidence distinct
 
 More detail: [gmodbench.com/methodology](https://gmodbench.com/methodology)
 
@@ -319,7 +304,7 @@ Fixtures live at `fixtures/<fixture-id>/fixture.json` — prompt, provenance, co
 | `regex` | Unambiguous API / code shape (fenced body only) |
 | `plugin` | Semantic rules in `src/scoring/` |
 
-The suite includes Facepunch-wiki-backed API questions and performance fixtures only where the workload has a clear contract-equivalent winner. Ties, folklore, and unsafe “faster” answers are omitted.
+The suite includes Facepunch-wiki-backed API questions and performance fixtures only where the workload has a clear contract-equivalent winner. Ties, folklore, and unsafe "faster" answers are omitted.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for evidence, versioning, scorer, test, and adapter requirements.
 
@@ -336,7 +321,7 @@ Finished runs: `.gmod-bench/runs/<run-id>/`
 | `leaderboard.json` | Per-model scores for that run |
 | `attempts.jsonl` | One row per attempt |
 
-Public pages on **[gmodbench.com](https://gmodbench.com)** are built from these runs so you can open a model’s answers and see **why** it ranked where it did.
+Public pages on **[gmodbench.com](https://gmodbench.com)** are built from these runs so you can open a model's answers and see **why** it ranked where it did.
 
 ```sh
 bun run bench verify --all
@@ -360,16 +345,14 @@ Tests and CI do not call model providers.
 
 <div align="center">
 
-### Built for GMod people who want a real answer
+### Built for GMod people who want a real answer.
 
-**Live board → [gmodbench.com](https://gmodbench.com)**
-
-[![⭐ Star on GitHub](https://img.shields.io/github/stars/Iydah/gmod-bench?style=for-the-badge&logo=github&logoColor=white&color=e8b84a&labelColor=111111&label=star)](https://github.com/Iydah/gmod-bench)
+<a href="https://gmodbench.com"><img src="https://img.shields.io/badge/▶_Live_board-gmodbench.com-0081ff?style=for-the-badge&labelColor=0a0a0a" alt="Live board" /></a>
 &nbsp;
-[![Visit website](https://img.shields.io/badge/visit-gmodbench.com-70a3f3?style=for-the-badge&labelColor=0a0a0a)](https://gmodbench.com)
-
-<br />
+<a href="https://github.com/Iydah/gmod-bench/stargazers"><img src="https://img.shields.io/github/stars/Iydah/gmod-bench?style=for-the-badge&logo=github&logoColor=white&color=f2b84b&labelColor=0a0a0a&label=Star" alt="Star on GitHub" /></a>
 
 <sub>MIT · open evidence · no vibes-only ranking</sub>
+
+<sub>If this helped you pick a model for your next addon, <a href="https://github.com/Iydah/gmod-bench/stargazers"><b>a star means a lot ⭐</b></a></sub>
 
 </div>
