@@ -17,7 +17,7 @@
 </p>
 
 <p>
-  <a href="https://gmodbench.com"><b>🌐 gmodbench.com</b></a>
+  <a href="https://gmodbench.com"><b>gmodbench.com</b></a>
   &nbsp;·&nbsp;
   <a href="https://gmodbench.com/leaderboard">Leaderboard</a>
   &nbsp;·&nbsp;
@@ -47,17 +47,17 @@ GMod addon work is its own dialect: realms, hooks, net messages, prediction, Dar
 > _"Is this model better for my next addon?"_
 
 <table>
-<tr><td>🏆 &nbsp;<b>Live ranks</b></td><td><a href="https://gmodbench.com">gmodbench.com</a></td></tr>
-<tr><td>🔍 &nbsp;<b>Per-run evidence</b></td><td><a href="https://gmodbench.com/runs">gmodbench.com/runs</a></td></tr>
-<tr><td>📐 &nbsp;<b>How scoring works</b></td><td><a href="https://gmodbench.com/methodology">gmodbench.com/methodology</a></td></tr>
-<tr><td>⚙️ &nbsp;<b>This harness</b></td><td>clone · <code>bun install</code> · <code>bun run bench</code></td></tr>
+<tr><td><b>Live ranks</b></td><td><a href="https://gmodbench.com">gmodbench.com</a></td></tr>
+<tr><td><b>Per-run evidence</b></td><td><a href="https://gmodbench.com/runs">gmodbench.com/runs</a></td></tr>
+<tr><td><b>How scoring works</b></td><td><a href="https://gmodbench.com/methodology">gmodbench.com/methodology</a></td></tr>
+<tr><td><b>This harness</b></td><td>clone · <code>bun install</code> · <code>bun run bench</code></td></tr>
 </table>
 
 Every prompt, scoring rule, model answer, and result is open for inspection.
 
 ---
 
-## 🌐 Live site — [gmodbench.com](https://gmodbench.com)
+## Live site — [gmodbench.com](https://gmodbench.com)
 
 The leaderboard is live on Cloudflare. **Compare models, expand any row for the evidence, and open the exact runs that produced a rank.**
 
@@ -351,6 +351,6 @@ Tests and CI do not call model providers.
 
 <sub>MIT · open evidence · no vibes-only ranking</sub>
 
-<sub>If this helped you pick a model for your next addon, <a href="https://github.com/Iydah/gmod-bench/stargazers"><b>a star means a lot ⭐</b></a></sub>
+<sub>If this helped you pick a model for your next addon, <a href="https://github.com/Iydah/gmod-bench/stargazers"><b>a star means a lot</b></a></sub>
 
 </div>
