@@ -1,0 +1,26 @@
+node_modules/
+.gmod-bench/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+gmod-bench.config.json
+.antigravitycli/
+
+# Local agent / MCP tool caches (not part of the product)
+mcps/
+
+# Agent plans/specs — local only, not part of the public product
+docs/
+
+# Private deploy / archive gateway ops (not product surface)
+workers/
+
+# website (Astro)
+website/node_modules/
+website/dist/
+website/.astro/
+website/.wrangler/
+# Sanitized run packs live on R2 / local disk, not in git
+website/public/runs/

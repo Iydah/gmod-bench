@@ -1,0 +1,33 @@
+{
+  "id": "gmod.perf.ply-table-index.v1",
+  "version": 1,
+  "title": "ply.field vs tab[ply].field storage",
+  "prompt": "In Garry's Mod Lua, you store temporary per-player data read very often. Show a faster storage pattern than ply.someField = value for reads.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 1,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "external table keyed by player",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/ply_vs_table_index.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "\\[\\s*ply\\s*\\]",
+      "\\[\\s*player\\s*\\]",
+      "WeakKeys|setmetatable"
+    ],
+    "partialPatterns": ["ply\\.\\w+\\s*="],
+    "incorrectPatterns": []
+  }
+}

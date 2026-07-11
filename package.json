@@ -1,0 +1,34 @@
+{
+  "name": "gmod-bench",
+  "version": "0.2.0",
+  "description": "Find the best AI models for Garry's Mod development — public GMod Lua coding challenges and leaderboard.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "gmod-bench": "./src/index.ts"
+  },
+  "scripts": {
+    "bench": "bun run src/index.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "typecheck:scripts": "tsc --project tsconfig.scripts.json",
+    "lint": "oxlint src tests scripts website/src website/scripts --deny-warnings",
+    "format": "prettier --write src tests scripts website/src website/astro.config.ts website/wrangler.jsonc package.json tsconfig.json tsconfig.scripts.json prettier.config.ts .github",
+    "format:check": "prettier --check src tests scripts website/src website/astro.config.ts website/wrangler.jsonc package.json tsconfig.json tsconfig.scripts.json prettier.config.ts .github",
+    "website:check": "bun run --cwd website check",
+    "check": "bun run format:check && bun run typecheck && bun run typecheck:scripts && bun run lint && bun test && bun run website:verify",
+    "website:dev": "bun run --cwd website dev",
+    "website:build": "bun run --cwd website build",
+    "website:verify": "bun run --cwd website verify",
+    "website:publish-data": "bun run scripts/sync-website-leaderboard.ts",
+    "storage:publish-r2": "bun run scripts/publish-r2.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "oxlint": "^1.73.0",
+    "prettier": "^3.9.5",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^5.9.3"
+  }
+}

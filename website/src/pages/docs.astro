@@ -1,0 +1,233 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import site from "../data/site.json";
+
+const install = `git clone ${site.github}.git
+cd gmod-bench
+bun install`;
+
+const doctor = `bun run bench doctor
+bun run bench list
+bun run bench list-models --free`;
+
+const freeRun = `# Free OpenRouter (:free) — rate-limited
+# requires OPENROUTER_API_KEY in .env
+bun run bench run --fixture all --openrouter-free --concurrency 2`;
+
+const paidRun = `# Paid OpenRouter — no free RPM/RPD limiter
+bun run bench run --fixture all --runners openrouter --concurrency 8 \`
+  --model openrouter=openai/gpt-4o-mini \`
+  --model openrouter=anthropic/claude-sonnet-4 \`
+  --model openrouter=google/gemini-2.5-flash`;
+
+const agyRun = `# AntiGravity (CLI id: agy) when installed & strict-capable
+bun run bench run --fixture all --runners agy --repeat 5 --concurrency 6`;
+
+const resume = `bun run bench run --fixture all --openrouter-free --concurrency 2 \`
+  --resume-from .gmod-bench/runs/<checkpoint-or-run-id>
+
+bun run bench report --run .gmod-bench/runs/<run-id>/run.json
+bun run bench compare --run .gmod-bench/runs/<id> \`
+  --model "Model A" --model "Model B"`;
+
+const quarantine = `bun run bench quarantine
+bun run bench quarantine --clear
+bun run bench quarantine --clear provider/model:free`;
+---
+
+<BaseLayout pageId="docs">
+  <div class="container">
+    <header class="page-header">
+      <h1>Docs</h1>
+      <p>
+        Run the same GMod coding benchmark locally, compare your preferred
+        models, and inspect every answer behind the scores.
+      </p>
+    </header>
+
+    <div class="docs-layout">
+      <nav class="docs-toc" aria-label="On this page">
+        <div class="docs-toc__title">On this page</div>
+        <ul>
+          <li><a href="#install">Install</a></li>
+          <li><a href="#doctor">Doctor &amp; list</a></li>
+          <li><a href="#free">Free OpenRouter</a></li>
+          <li><a href="#paid">Paid OpenRouter</a></li>
+          <li><a href="#antigravity">AntiGravity</a></li>
+          <li><a href="#thinking">Thinking levels</a></li>
+          <li><a href="#concurrency">Concurrency</a></li>
+          <li><a href="#resume">Resume &amp; report</a></li>
+          <li><a href="#artifacts">Artifacts</a></li>
+        </ul>
+      </nav>
+
+      <article class="prose">
+        <h2 id="install">Install</h2>
+        <p>
+          Requires <a
+            href="https://bun.sh"
+            rel="noopener noreferrer"
+            target="_blank">Bun</a
+          >. Clone the monorepo and install dependencies:
+        </p>
+        <CodeBlock label="shell" code={install} />
+        <p>
+          Optional for OpenRouter: copy{" "}
+          <code class="code-inline">.env.example</code>
+          {" "}to{" "}
+          <code class="code-inline">.env</code>
+          {" "}and set{" "}
+          <code class="code-inline">OPENROUTER_API_KEY</code>. Bun loads{" "}
+          <code class="code-inline">.env</code> automatically. Never commit secrets.
+        </p>
+
+        <h2 id="doctor">Doctor &amp; list</h2>
+        <p>
+          <code class="code-inline">doctor</code> checks installed CLIs and OpenRouter
+          key readiness (including free-quota plan). It never sends a model prompt.
+        </p>
+        <CodeBlock label="shell" code={doctor} />
+
+        <h2 id="free">Free OpenRouter</h2>
+        <p>
+          Uses the live free catalog (<code class="code-inline">:free</code> text
+          chat models). Official free cap is <strong>20 RPM</strong>; daily
+          requests are <strong>50</strong> or
+          <strong>1000</strong> depending on whether the key has ≥$10 credits.
+        </p>
+        <CodeBlock label="powershell" code={freeRun} />
+        <p>
+          Free concurrency is clamped (typically ≤4). Dead free endpoints that
+          never return text can enter a short quarantine so they stop burning
+          budget:
+        </p>
+        <CodeBlock label="shell" code={quarantine} />
+
+        <h2 id="paid">Paid OpenRouter</h2>
+        <p>
+          Uses explicit paid model ids. The free RPM/RPD limiter does not apply;
+          providers may still 429. Same fixtures, scorers, and reports as free
+          mode.
+        </p>
+        <CodeBlock label="powershell" code={paidRun} />
+        <p>
+          You can mix free and paid ids in one run — the limiter only applies to
+          free-tier slots.
+        </p>
+
+        <h2 id="antigravity">AntiGravity</h2>
+        <p>
+          Display name is always <strong>AntiGravity</strong>. The CLI binary
+          and
+          <code class="code-inline">--runners</code> id are still{" "}
+          <code class="code-inline">agy</code>. When the CLI is ≥1.1.x and
+          strict-capable, the harness stays unsupported for strict scoring until
+          a reviewed deny-all tools policy and structured trace contract are
+          available.
+        </p>
+        <CodeBlock label="shell" code={agyRun} />
+        <p>
+          Without an explicit <code class="code-inline">--concurrency</code>,
+          AntiGravity defaults high for paid Gemini tiers (~25). If you hit 429s
+          on free Gemini API, drop to 2–4.
+        </p>
+
+        <h2 id="thinking">Thinking levels</h2>
+        <p>
+          Some models expose a reasoning / thinking effort (None, Low, Medium,
+          High, Extra High, Max, Ultra). On the leaderboard that lives in its
+          own
+          <strong>Think</strong> column. Use the Think filter to compare efforts.
+        </p>
+        <ul>
+          <li>
+            AntiGravity Gemini rows often look like <code class="code-inline"
+              >Gemini 3.1 Pro (Low)</code
+            >
+            in raw logs — the site shows model + thinking apart.
+          </li>
+          <li>
+            OpenRouter free slots may append <code class="code-inline"
+              >@low</code
+            > /
+            <code class="code-inline">@medium</code> / <code class="code-inline"
+              >@high</code
+            > /
+            <code class="code-inline">@none</code> to the model id.
+          </li>
+          <li>Rows with no thinking signal show a dash in Think.</li>
+        </ul>
+
+        <h2 id="concurrency">Concurrency notes</h2>
+        <ul>
+          <li>
+            Bounds: <code class="code-inline">--repeat</code> 1–20,
+            <code class="code-inline">--timeout-seconds</code> 1–600,
+            <code class="code-inline">--concurrency</code> 1–32
+          </li>
+          <li>OpenRouter free: clamp ≤4 (20 RPM free cap)</li>
+          <li>OpenRouter paid / explicit flag: whatever you pass (≤32)</li>
+          <li>
+            AntiGravity default (no flag): auto ~25 for paid Gemini-class
+            throughput
+          </li>
+        </ul>
+        <p>
+          Concurrency is for rate limits, not a RAM guess. Prefer lower values
+          when debugging format errors under load.
+        </p>
+
+        <h2 id="resume">Resume, report, compare</h2>
+        <CodeBlock label="powershell" code={resume} />
+        <p>
+          <code class="code-inline">--resume-from</code> keeps prior attempts and
+          only runs remaining slots after a crash or interrupt.
+        </p>
+
+        <h2 id="artifacts">Artifacts</h2>
+        <p>
+          Each run writes an audit pack under
+          <code class="code-inline">.gmod-bench/runs/&lt;run-id&gt;/</code> (gitignored):
+        </p>
+        <ul>
+          <li>
+            <code class="code-inline">report.md</code> — human leaderboard + attempts
+          </li>
+          <li>
+            <code class="code-inline">run.json</code> — structured artifact (schema
+            v3) with graded answers
+          </li>
+          <li>
+            <code class="code-inline">leaderboard.json</code> / <code
+              class="code-inline">.csv</code
+            >
+          </li>
+          <li>
+            <code class="code-inline">attempts.jsonl</code>, <code
+              class="code-inline">preds.jsonl</code
+            >,
+            <code class="code-inline">responses/</code>, optional <code
+              class="code-inline">raw/</code
+            >
+          </li>
+        </ul>
+        <p>
+          Quality gate in the monorepo: <code class="code-inline"
+            >bun run check</code
+          > (typecheck + tests). Site-only work lives under <code
+            class="code-inline">website/</code
+          > and does not affect the harness.
+        </p>
+        <p>
+          Source:
+          <a href={site.github} rel="noopener noreferrer" target="_blank"
+            >{site.github}</a
+          >
+          · Scoring: <a href="/methodology">methodology</a>
+          · Results: <a href="/leaderboard">leaderboard</a>
+        </p>
+      </article>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,63 @@
+---
+import site from "../data/site.json";
+import Icon from "./Icon.astro";
+
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+const links = [
+  { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/runs", label: "Runs" },
+  { href: "/methodology", label: "Methodology" },
+  { href: "/docs", label: "Docs" },
+];
+
+function isActive(href: string): boolean {
+  const clean = href.replace(/\/$/, "") || "/";
+  return pathname === clean || pathname.startsWith(`${clean}/`);
+}
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a
+      class="wordmark"
+      href="/"
+      aria-label={`${site.name} home`}
+      data-astro-prefetch
+    >
+      <img
+        class="wordmark__logo"
+        src="/gmod-logo.svg"
+        width="22"
+        height="22"
+        alt=""
+        decoding="async"
+      />
+      <span>{site.name}</span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      {
+        links.map((link) => (
+          <a
+            class="nav__link"
+            href={link.href}
+            data-astro-prefetch
+            aria-current={isActive(link.href) ? "page" : undefined}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      <a
+        class="nav__github"
+        href={site.github}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <Icon name="github" size={14} />
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>

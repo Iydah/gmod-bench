@@ -1,0 +1,29 @@
+{
+  "id": "gmod.perf.string-table-concat.v1",
+  "version": 1,
+  "title": "String concat vs table.concat",
+  "prompt": "In Garry's Mod Lua, you build one large string from thousands of small pieces. Show the faster approach compared to repeated .. concatenation.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 2,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "table.concat",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/string_vs_table_concat.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": ["table\\.concat", "table\\.Concat"],
+    "partialPatterns": ["\\.\\."],
+    "incorrectPatterns": []
+  }
+}

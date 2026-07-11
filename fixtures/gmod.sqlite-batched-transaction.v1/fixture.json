@@ -1,0 +1,14 @@
+{
+  "id": "gmod.sqlite-batched-transaction.v1",
+  "version": 1,
+  "title": "Bounded batched SQLite transaction",
+  "prompt": "In server-side Garry's Mod Lua, insert at most 500 supplied rows with id and score into scores(id, score). Optimize hundreds of writes using one transaction and safe typed parameter binding.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 1, "maxCandidateLoops": 1, "maxAnswerBytes": 4096 },
+  "oracle": {
+    "expectedPrimitive": "bounded loop with sql.Begin, sql.QueryTyped, and sql.Commit",
+    "sourceUrls": ["https://wiki.facepunch.com/gmod/sql.Begin", "https://wiki.facepunch.com/gmod/sql.QueryTyped", "https://wiki.facepunch.com/gmod/sql.Commit"],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "sqlite-batch" }
+}

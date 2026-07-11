@@ -1,0 +1,14 @@
+{
+  "id": "gmod.net-secure-entity-action.v1",
+  "version": 1,
+  "title": "Secure bounded client entity action",
+  "prompt": "In server-side Garry's Mod Lua, receive MyAddon.SetPower from a client. The message contains an entity and an unsigned power from 0 through 100. Only an admin who owns the entity may change it. Bound malformed or spammed requests before calling ent:SetPower(power). Show the complete receiver; assume the network string was pooled at load time.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 0, "maxCandidateLoops": 0, "maxAnswerBytes": 8192 },
+  "oracle": {
+    "expectedPrimitive": "bounded net.Receive with callback ply authorization, target ownership, value range, and per-player rate limit",
+    "sourceUrls": ["https://wiki.facepunch.com/gmod/net.Receive", "https://wiki.facepunch.com/gmod/Net_Library_Usage", "https://wiki.facepunch.com/gmod/net.ReadUInt"],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "net-security" }
+}

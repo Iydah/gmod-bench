@@ -1,0 +1,27 @@
+{
+  "id": "gmod.net-bounded-chunk-transfer.v1",
+  "version": 1,
+  "title": "Receive bounded authenticated upload chunks",
+  "prompt": "In server-side Garry's Mod Lua, complete the MyAddon.Chunk receiver for existing transfers[ply] state. Each message contains transfer id UInt32, one-based chunk index UInt16, byte length UInt16, then data. Enforce at most 64 chunks, 24000 bytes per chunk, and 1048576 aggregate bytes. Reject wrong transfer IDs, invalid indices, duplicates, a declared size larger than net.BytesLeft(), and any size overflow before net.ReadData. Store valid data in transfer.chunks[index], track received and totalBytes, and refresh lastActivity. Pool the network string once.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 12288
+  },
+  "oracle": {
+    "expectedPrimitive": "sender-owned transfer lookup with ID, index, duplicate, per-chunk, aggregate, and message bounds before net.ReadData",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/net.Receive",
+      "https://wiki.facepunch.com/gmod/net.ReadData",
+      "https://wiki.facepunch.com/gmod/net.BytesLeft",
+      "https://wiki.facepunch.com/gmod/Networking_Usage",
+      "https://wiki.facepunch.com/gmod/util.AddNetworkString"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "bounded-chunk-transfer" }
+}

@@ -1,0 +1,196 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LeaderboardTable from "../components/LeaderboardTable.astro";
+import site from "../data/site.json";
+import leaderboard from "../data/leaderboard.json";
+import { shouldShowPassAtK } from "../lib/leaderboard-view";
+
+const { meta, models } = leaderboard;
+const showPassAtK = shouldShowPassAtK(models);
+const runIds: string[] = Array.isArray((meta as { runIds?: string[] }).runIds)
+  ? (meta as { runIds: string[] }).runIds
+  : ([meta.primaryRunId, meta.secondaryRunId].filter(Boolean) as string[]);
+const runCount =
+  typeof (meta as { runCount?: number }).runCount === "number"
+    ? (meta as { runCount: number }).runCount
+    : runIds.length;
+const adapters: string[] = Array.isArray(
+  (meta as { adapters?: string[] }).adapters,
+)
+  ? (meta as { adapters: string[] }).adapters
+  : [...new Set(models.map((m) => m.adapterId))];
+
+const adapterLabels: Record<string, string> = {
+  codex: "Codex",
+  agy: "AntiGravity",
+  opencode: "OpenCode",
+  openrouter: "OpenRouter",
+};
+
+const dateLabel = new Date(`${meta.date}T12:00:00`).toLocaleDateString(
+  "en-US",
+  {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  },
+);
+
+const runsMeta = Array.isArray((leaderboard as { runs?: unknown }).runs)
+  ? (
+      leaderboard as {
+        runs: Array<{ runId: string; models: number; adapters: string[] }>;
+      }
+    ).runs
+  : [];
+
+const stats = [
+  { value: String(meta.fixtureCount), label: "Fixtures" },
+  { value: String(models.length), label: "Model rows" },
+  { value: String(runCount), label: "Runs merged" },
+  { value: String(adapters.length), label: "Adapters" },
+];
+
+const columnGuide = [
+  {
+    name: "Adapter",
+    body: "Runner used: Codex, AntiGravity, OpenCode, OpenRouter, …",
+  },
+  {
+    name: "Think",
+    body: "Reasoning effort: Low, Medium, High, Extra High, Max, Ultra. Filter via Think.",
+  },
+  {
+    name: "Pass %",
+    body: "pass ÷ scored. Invalid output is tracked separately from semantically graded answers.",
+  },
+  {
+    name: "Cover %",
+    body: "Evidence-bearing attempts divided by scheduled attempts; harness failures are excluded.",
+  },
+  ...(showPassAtK
+    ? [
+        {
+          name: "pass@k",
+          body: "Fixture solved on any of K attempts when the run used repeats.",
+        },
+      ]
+    : []),
+  {
+    name: "Verified score",
+    body: "Cumulative equal-weight fixture score. Harness failures are excluded; malformed returned answers score zero.",
+  },
+  {
+    name: "Outcomes",
+    body: "pass / partial / wrong / invalid output. Invalid output means the model answered but broke the required response shape.",
+  },
+  {
+    name: "Time",
+    body: "Average wall time per attempt.",
+  },
+];
+---
+
+<BaseLayout
+  pageId="leaderboard"
+  description={`Compare AI models for Garry's Mod coding across ${meta.fixtureCount} public GMod Lua challenges.`}
+>
+  <div class="container lb-page">
+    <header class="lb-hero">
+      <div class="lb-hero__top">
+        <h1 class="lb-hero__title">Leaderboard</h1>
+        <p class="lb-hero__updated">{dateLabel}</p>
+      </div>
+      <p class="lb-hero__lead">
+        Find the strongest models for GMod coding within the broadest comparable
+        fixture cohort. Other published runs remain available in the archive.
+      </p>
+
+      <div class="lb-stats" role="list">
+        {
+          stats.map((s) => (
+            <div class="lb-stat" role="listitem">
+              <div class="lb-stat__value">{s.value}</div>
+              <div class="lb-stat__label">{s.label}</div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="lb-adapters" aria-label="Adapters on this board">
+        {
+          adapters.map((id) => (
+            <span class="lb-pill">{adapterLabels[id] ?? id}</span>
+          ))
+        }
+      </div>
+    </header>
+
+    <section class="lb-board" aria-label="Model leaderboard">
+      <LeaderboardTable models={models} />
+    </section>
+
+    <div class="lb-aside">
+      <details class="lb-fold">
+        <summary class="lb-fold__summary">
+          <span>How to read this board</span>
+          <span class="lb-fold__hint">disclaimer · columns · source runs</span>
+        </summary>
+        <div class="lb-fold__body">
+          <p class="lb-fold__text">{meta.disclaimer}</p>
+
+          <h3 class="lb-fold__h">Columns</h3>
+          <dl class="lb-guide">
+            {
+              columnGuide.map((col) => (
+                <div class="lb-guide__row">
+                  <dt>{col.name}</dt>
+                  <dd>{col.body}</dd>
+                </div>
+              ))
+            }
+          </dl>
+
+          {
+            runsMeta.length > 0 ? (
+              <>
+                <h3 class="lb-fold__h">Source runs</h3>
+                <ul class="lb-runs">
+                  {runsMeta.map((r) => (
+                    <li>
+                      <code class="code-inline">{r.runId.slice(0, 8)}</code>
+                      <span class="lb-runs__meta">
+                        {(r.adapters ?? [])
+                          .map((a) => adapterLabels[a] ?? a)
+                          .join(", ")}
+                        {" · "}
+                        {r.models} models
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : meta.note ? (
+              <>
+                <h3 class="lb-fold__h">Source runs</h3>
+                <p class="lb-fold__text">{meta.note}</p>
+              </>
+            ) : null
+          }
+
+          <p class="lb-fold__footer">
+            <span>Reproduce from</span>
+            {" "}
+            <a href={site.github} rel="noopener noreferrer" target="_blank"
+              >GitHub</a
+            >
+            <span class="lb-fold__sep" aria-hidden="true">·</span>
+            <span>full rules on</span>
+            {" "}
+            <a href="/methodology">methodology</a>
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+</BaseLayout>

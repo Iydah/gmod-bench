@@ -1,0 +1,82 @@
+---
+import site from "../data/site.json";
+import Icon from "./Icon.astro";
+
+const links = [
+  { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/runs", label: "Runs" },
+  { href: "/methodology", label: "Methodology" },
+  { href: "/docs", label: "Docs" },
+  {
+    href: site.github,
+    label: "GitHub",
+    external: true,
+    icon: "github" as const,
+  },
+  {
+    href: "/runs/index.html.md",
+    label: "Machine index",
+    icon: "file-text" as const,
+  },
+];
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__panel">
+      <div class="site-footer__head">
+        <a class="site-footer__mark" href="/" data-astro-prefetch>
+          <img
+            class="site-footer__logo"
+            src="/gmod-logo.svg"
+            width="28"
+            height="28"
+            alt=""
+            decoding="async"
+          />
+          <span class="site-footer__name">{site.name}</span>
+        </a>
+        <a
+          class="site-footer__cta"
+          href={site.github}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <Icon name="star" size={14} class="site-footer__cta-star" />
+          <span>Star</span>
+          <span class="site-footer__cta-sep" aria-hidden="true"></span>
+          <Icon name="github" size={14} />
+        </a>
+      </div>
+
+      <nav class="site-footer__nav" aria-label="Footer">
+        {
+          links.map((link) => (
+            <a
+              href={link.href}
+              rel={link.external ? "noopener noreferrer" : undefined}
+              target={link.external ? "_blank" : undefined}
+              data-astro-prefetch={!link.external ? true : undefined}
+            >
+              {link.icon ? (
+                <Icon name={link.icon} size={14} class="site-footer__ico" />
+              ) : null}
+              {link.label}
+              {link.external ? (
+                <Icon
+                  name="arrow-up-right"
+                  size={12}
+                  class="site-footer__ext"
+                />
+              ) : null}
+            </a>
+          ))
+        }
+      </nav>
+
+      <div class="site-footer__bar">
+        <span class="site-footer__domain">{site.domain}</span>
+      </div>
+    </div>
+  </div>
+</footer>

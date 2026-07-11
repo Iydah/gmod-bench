@@ -1,0 +1,36 @@
+{
+  "id": "gmod.perf.surface-text.v1",
+  "version": 1,
+  "title": "surface text vs draw.DrawText",
+  "prompt": "In Garry's Mod client Lua, you draw a single-line string every frame. Show a faster drawing approach among surface.* text helpers and draw.DrawText / SimpleTextOutlined.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "surface.DrawText or draw.SimpleText",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/surface_vs_draw_text.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "surface\\.DrawText",
+      "draw\\.SimpleText\\s*\\("
+    ],
+    "partialPatterns": [
+      "draw\\.DrawText"
+    ],
+    "incorrectPatterns": [
+      "SimpleTextOutlined"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+gmod-bench
+
+Owner: iyda
+Source: https://github.com/Iydah/gmod-bench
+Purpose: help Garry's Mod developers compare AI models for GMod Lua coding

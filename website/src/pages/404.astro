@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+export const prerender = true;
+Astro.response.status = 404;
+---
+
+<BaseLayout pageId="notFound">
+  <div class="container">
+    <header class="page-header">
+      <p class="eyebrow">404</p>
+      <h1>That benchmark route does not exist.</h1>
+      <p>
+        The URL may be old, mistyped, or from a run that was never published.
+      </p>
+    </header>
+    <nav class="panel panel--pad prose" aria-label="Useful destinations">
+      <h2>Continue from a public route</h2>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/leaderboard/">Leaderboard</a></li>
+        <li><a href="/runs/">Published runs</a></li>
+        <li><a href="/docs/">Documentation</a></li>
+      </ul>
+    </nav>
+  </div>
+</BaseLayout>

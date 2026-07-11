@@ -1,0 +1,35 @@
+{
+  "id": "gmod.net-receivers.v1",
+  "version": 1,
+  "title": "Network message receiver registration",
+  "prompt": "In Garry's Mod Lua, show how to register a handler for an incoming net message named MyAddon.Sync.\n\nReturn exactly one fenced lua code block with the registration, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "net.Receive",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/net.Receive"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "net\\.Receive\\s*\\(\\s*[\"']MyAddon\\.Sync[\"']"
+    ],
+    "partialPatterns": [
+      "net\\.Receive\\s*\\("
+    ],
+    "incorrectPatterns": [
+      "net\\.Start\\s*\\(",
+      "net\\.Incoming\\s*\\("
+    ]
+  }
+}

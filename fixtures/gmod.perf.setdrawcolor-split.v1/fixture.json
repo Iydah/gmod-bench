@@ -1,0 +1,34 @@
+{
+  "id": "gmod.perf.setdrawcolor-split.v1",
+  "version": 1,
+  "title": "surface.SetDrawColor RGB split vs Color object",
+  "prompt": "In Garry's Mod client Lua, surface.SetDrawColor can take a Color object or separate r,g,b numbers. Show the faster call style for a hot draw path.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "SetDrawColor(r,g,b[,a]) split numbers",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/setdrawcolor_comparison.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "SetDrawColor\\s*\\(\\s*\\d+",
+      "SetDrawColor\\s*\\(\\s*\\w+\\s*,\\s*\\w+\\s*,\\s*\\w+"
+    ],
+    "partialPatterns": [
+      "SetDrawColor\\s*\\(\\s*color_|SetDrawColor\\s*\\(\\s*Color\\s*\\("
+    ],
+    "incorrectPatterns": []
+  }
+}

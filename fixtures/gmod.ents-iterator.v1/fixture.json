@@ -1,0 +1,27 @@
+{
+  "id": "gmod.ents-iterator.v1",
+  "version": 1,
+  "title": "Efficient entity class iteration",
+  "prompt": "In Garry's Mod Lua, write a loop that visits every entity of class prop_physics without first building a table of every entity in the map.\n\nReturn exactly one fenced lua code block with your loop, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 1,
+    "maxCandidateLoops": 1,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "ents.Iterator / ents.FindByClass",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/ents.FindByClass",
+      "https://wiki.facepunch.com/gmod/ents.Iterator"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "3"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "entity-class-iterator"
+  }
+}

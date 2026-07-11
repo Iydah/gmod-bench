@@ -1,0 +1,29 @@
+{
+  "id": "gmod.perf.find-ents-near.v1",
+  "version": 1,
+  "title": "Finding entities near a player",
+  "prompt": "In Garry's Mod server Lua, you need entities near a player for a cheap spatial query. Show one of the faster built-in FindIn* approaches from common benchmarks (not FindInPVS as the default pick).\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 1,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "ents.FindInBox or ents.FindInCone",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/finding_entities.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": ["FindInBox", "FindInCone"],
+    "partialPatterns": ["FindInSphere", "FindInPVS"],
+    "incorrectPatterns": []
+  }
+}

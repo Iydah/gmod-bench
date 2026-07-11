@@ -1,0 +1,14 @@
+{
+  "id": "gmod.net-compact-targeted-update.v1",
+  "version": 1,
+  "title": "Compact targeted network update",
+  "prompt": "In Garry's Mod server Lua, define a load-time pooled net message and a function that sends a state enum 0..7 plus an amount 0..1000 only to the supplied affected-player recipients. Optimize the payload and recipient fanout; do not use a generic table payload.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 0, "maxCandidateLoops": 0, "maxAnswerBytes": 4096 },
+  "oracle": {
+    "expectedPrimitive": "util.AddNetworkString once, net.WriteUInt(3/10 bits), net.Send(recipients)",
+    "sourceUrls": ["https://wiki.facepunch.com/gmod/util.AddNetworkString", "https://wiki.facepunch.com/gmod/net.WriteUInt", "https://wiki.facepunch.com/gmod/net.Send"],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "net-efficiency" }
+}

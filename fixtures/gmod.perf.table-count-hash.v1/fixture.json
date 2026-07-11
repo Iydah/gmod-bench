@@ -1,0 +1,29 @@
+{
+  "id": "gmod.perf.table-count-hash.v1",
+  "version": 1,
+  "title": "table.Count vs # on sequential tables",
+  "prompt": "In Garry's Mod Lua, you need the length of a sequential array-like table. Show the preferred operator/function.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "#table",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://wiki.facepunch.com/gmod/table.Count"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": ["(?:=|return|\\()\\s*#\\s*\\w+"],
+    "partialPatterns": [],
+    "incorrectPatterns": ["table\\.Count"]
+  }
+}

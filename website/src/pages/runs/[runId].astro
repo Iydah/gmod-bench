@@ -1,0 +1,244 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LeaderboardTable from "../../components/LeaderboardTable.astro";
+import type { LeaderboardRow } from "../../lib/leaderboard-view";
+import {
+  adapterLabel,
+  adaptersLabel,
+  formatDuration,
+  formatInt,
+  formatRunDateTime,
+  shortRunId,
+} from "../../lib/runs-view";
+import { getPublishedRun } from "../../lib/published-runs";
+import "../../styles/runs.css";
+
+const run = getPublishedRun(Astro.params.runId ?? "");
+if (!run) {
+  return new Response("Not found", {
+    status: 404,
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
+}
+
+const base = `/runs/${run.runId}`;
+const shortId = shortRunId(run.runId);
+
+/**
+ * Load per-run board from the published static artifact.
+ * Prefer import.meta.glob (bundled, works on Workers) then fetch fallback.
+ */
+const boardModules = import.meta.glob<{
+  models?: LeaderboardRow[];
+}>("/public/runs/*/leaderboard.json", { eager: true });
+
+function boardFromGlob(runId: string): LeaderboardRow[] {
+  const key = Object.keys(boardModules).find((k) => k.includes(`/${runId}/`));
+  if (!key) return [];
+  const models = boardModules[key]?.models;
+  return Array.isArray(models) ? models : [];
+}
+
+async function boardFromFetch(runId: string): Promise<LeaderboardRow[]> {
+  try {
+    const res = await fetch(
+      new URL(`/runs/${runId}/leaderboard.json`, Astro.url),
+    );
+    if (!res.ok) return [];
+    const parsed = (await res.json()) as { models?: LeaderboardRow[] };
+    return Array.isArray(parsed.models) ? parsed.models : [];
+  } catch {
+    return [];
+  }
+}
+
+let boardModels = boardFromGlob(run.runId);
+if (boardModels.length === 0) {
+  boardModels = await boardFromFetch(run.runId);
+}
+// Keep runId for fixture lookup; hide the redundant per-row run link.
+boardModels = boardModels.map((m) => ({ ...m, runId: run.runId }));
+
+const stats = [
+  { value: String(run.fixtureCount), label: "Fixtures" },
+  { value: formatInt(run.attemptCount), label: "Attempts" },
+  { value: String(run.modelIds.length), label: "Models" },
+  {
+    value: formatDuration(run.startedAt, run.completedAt),
+    label: "Duration",
+  },
+];
+
+const artifacts = [
+  ...(run.r2ManifestUrl
+    ? [
+        {
+          href: run.r2ManifestUrl,
+          title: "R2 manifest",
+          body: "Immutable content hashes",
+          external: true,
+        },
+      ]
+    : []),
+  {
+    href: `${base}/run.json`,
+    title: "run.json",
+    body: "Structured run + answers",
+    external: false,
+  },
+  {
+    href: `${base}/report.md`,
+    title: "report.md",
+    body: "Human-readable report",
+    external: false,
+  },
+  {
+    href: `${base}/leaderboard.json`,
+    title: "leaderboard.json",
+    body: "Per-run board rows",
+    external: false,
+  },
+  {
+    href: `${base}/attempts.jsonl`,
+    title: "attempts.jsonl",
+    body: "One attempt per line",
+    external: false,
+  },
+  {
+    href: `${base}/attempts.csv`,
+    title: "attempts.csv",
+    body: "Spreadsheet export",
+    external: false,
+  },
+];
+---
+
+<BaseLayout
+  pageId="run"
+  title={`Run ${shortId}`}
+  description={`gmod-bench run ${shortId} — ${run.fixtureCount} fixtures, ${run.attemptCount} attempts.`}
+  canonicalPath={base}
+  {run}
+>
+  <div class="container runs-page run-detail">
+    <p class="run-detail__back">
+      <a class="text-link" href="/runs">← All runs</a>
+    </p>
+
+    <header class="runs-hero">
+      <div class="runs-hero__top">
+        <h1 class="runs-hero__title">
+          Run <span class="run-detail__short">{shortId}</span>
+        </h1>
+        <p class="runs-hero__updated">
+          {formatRunDateTime(run.completedAt)}
+        </p>
+      </div>
+      <p class="runs-hero__lead">
+        {adaptersLabel(run.adapters)} · {run.modelIds.length}{" "}
+        {run.modelIds.length === 1 ? "model" : "models"} · repeat ×{run.repeat}
+      </p>
+      <p class="run-detail__fullid">
+        <code>{run.runId}</code>
+      </p>
+
+      <div class="runs-stats" role="list">
+        {
+          stats.map((s) => (
+            <div class="runs-stat" role="listitem">
+              <div class="runs-stat__value">{s.value}</div>
+              <div class="runs-stat__label">{s.label}</div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="runs-adapters" aria-label="Adapters">
+        {
+          run.adapters.map((id) => (
+            <span class="runs-pill">{adapterLabel(id)}</span>
+          ))
+        }
+        <span class="runs-pill runs-pill--muted">×{run.repeat} repeat</span>
+      </div>
+    </header>
+
+    <section class="run-section" aria-labelledby="artifacts-title">
+      <div class="run-section__head">
+        <h2 id="artifacts-title" class="run-section__title">Downloads</h2>
+        <p class="run-section__desc">Audit pack</p>
+      </div>
+      <ul class="run-dl">
+        {
+          artifacts.map((a) => (
+            <li>
+              <a
+                class="run-dl__row"
+                href={a.href}
+                rel={a.external ? "noopener noreferrer" : undefined}
+                target={a.external ? "_blank" : undefined}
+              >
+                <code class="run-dl__file">{a.title}</code>
+                <span class="run-dl__meta">{a.body}</span>
+                <span class="run-dl__go" aria-hidden="true">
+                  {a.external ? "↗" : "↓"}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="run-section" aria-labelledby="models-title">
+      <div class="run-section__head">
+        <h2 id="models-title" class="run-section__title">Results</h2>
+        <p class="run-section__desc">
+          {
+            boardModels.length > 0
+              ? `${boardModels.length} model${boardModels.length === 1 ? "" : "s"}`
+              : `${run.modelIds.length} model${run.modelIds.length === 1 ? "" : "s"}`
+          }
+        </p>
+      </div>
+      {
+        boardModels.length > 0 ? (
+          <div class="run-results">
+            <LeaderboardTable models={boardModels} hideRunLink />
+          </div>
+        ) : (
+          <p class="run-results__empty">
+            No leaderboard snapshot for this run. Downloads still have raw
+            artifacts.
+          </p>
+        )
+      }
+    </section>
+
+    <section class="run-section" aria-labelledby="fixtures-title">
+      <div class="run-section__head">
+        <h2 id="fixtures-title" class="run-section__title">Fixtures</h2>
+        <p class="run-section__desc">{run.fixtureCount}</p>
+      </div>
+      <ul class="run-fixtures">
+        {
+          run.fixtureIds.map((id) => (
+            <li>
+              <code>{id}</code>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <footer class="runs-footnote">
+      <p class="runs-footnote__links">
+        <a href="/leaderboard">Leaderboard</a>
+        <span class="runs-footnote__dot" aria-hidden="true">·</span>
+        <a href="/methodology">Methodology</a>
+        <span class="runs-footnote__dot" aria-hidden="true">·</span>
+        <a href="/runs">All runs</a>
+      </p>
+    </footer>
+  </div>
+</BaseLayout>

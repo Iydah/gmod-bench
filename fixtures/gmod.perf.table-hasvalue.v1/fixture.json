@@ -1,0 +1,33 @@
+{
+  "id": "gmod.perf.table-hasvalue.v1",
+  "version": 1,
+  "title": "table.HasValue vs keyed lookup",
+  "prompt": "In Garry's Mod Lua, you often check whether a value exists in a set. Show the faster approach compared to table.HasValue on a list.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 1,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "table[key] / set membership O(1)",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://wiki.facepunch.com/gmod/table.HasValue"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "\\[\\s*\\w+\\s*\\]\\s*(?:==|~=|then|and|or|\\))",
+      "if\\s+\\w+\\s*\\[",
+      "\\[\\s*[\"'][^\"']+[\"']\\s*\\]\\s*(?:==|~=|then|and|or|\\))"
+    ],
+    "partialPatterns": [],
+    "incorrectPatterns": ["table\\.HasValue"]
+  }
+}

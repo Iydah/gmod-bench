@@ -1,0 +1,25 @@
+{
+  "id": "gmod.spawn-preventive-rate-limit.v1",
+  "version": 1,
+  "title": "Prevent prop spam before entity creation",
+  "prompt": "In server-side sandbox Garry's Mod Lua, allow each player at most 10 prop-spawn attempts per one-second fixed window. Deny over-budget props before the entity is created, preserve other addons' spawn hooks when allowed, and clean per-player state on disconnect. Show the complete hooks.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 8192
+  },
+  "oracle": {
+    "expectedPrimitive": "PlayerSpawnProp fixed-window state keyed by player, return false only when denied, and PlayerDisconnected cleanup",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/SANDBOX:PlayerSpawnProp",
+      "https://wiki.facepunch.com/gmod/Hook_Library_Usage",
+      "https://wiki.facepunch.com/gmod/GM:PlayerDisconnected"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "preventive-spawn-limit" }
+}

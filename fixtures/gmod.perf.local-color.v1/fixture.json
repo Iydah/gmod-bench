@@ -1,0 +1,34 @@
+{
+  "id": "gmod.perf.local-color.v1",
+  "version": 1,
+  "title": "Reuse Color objects outside hot loops",
+  "prompt": "In Garry's Mod client Lua, a paint loop currently calls Color(255,255,255) every iteration. Show a faster pattern.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 1,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "local col = Color(...) outside loop",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/local_color_vs_redefining.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "local\\s+\\w+\\s*=\\s*Color\\s*\\(",
+      "local\\s+\\w+\\s*=\\s*color_"
+    ],
+    "partialPatterns": [
+      "Color\\s*\\("
+    ],
+    "incorrectPatterns": []
+  }
+}

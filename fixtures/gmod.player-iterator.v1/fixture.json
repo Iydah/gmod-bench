@@ -1,0 +1,28 @@
+{
+  "id": "gmod.player-iterator.v1",
+  "version": 2,
+  "title": "Direct all-player traversal",
+  "prompt": "In Garry's Mod Lua, write the most optimized loop that visits every currently connected player.\n\nFor reference, an older style looks like: for k, v in pairs(player.GetAll()) do ... end\n\nReturn exactly one fenced lua code block with your loop, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 1,
+    "maxCandidateLoops": 1,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "player.Iterator or cached numeric for over player.GetAll()",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/player.Iterator",
+      "https://wiki.facepunch.com/gmod/player.GetAll",
+      "https://github.com/OverlordAkise/gmod-lua-performance"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "5"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "player-iterator"
+  }
+}

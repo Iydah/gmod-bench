@@ -1,0 +1,250 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import site from "../data/site.json";
+
+const contractExample = `\`\`\`lua
+<one code body>
+\`\`\`
+Reason: <one line>`;
+---
+
+<BaseLayout pageId="methodology">
+  <div class="container">
+    <header class="page-header">
+      <h1>Methodology</h1>
+      <p>
+        How we test AI models on real GMod Lua knowledge and turn their answers
+        into a trustworthy leaderboard.
+      </p>
+    </header>
+
+    <div class="docs-layout">
+      <nav class="docs-toc" aria-label="On this page">
+        <div class="docs-toc__title">On this page</div>
+        <ul>
+          <li><a href="#what-we-measure">What we measure</a></li>
+          <li><a href="#contract">Response contract</a></li>
+          <li><a href="#statuses">Status taxonomy</a></li>
+          <li><a href="#metrics">Metrics</a></li>
+          <li><a href="#tokens">Tokens &amp; cost</a></li>
+          <li><a href="#runners">Runners</a></li>
+          <li><a href="#fairness">Fairness notes</a></li>
+        </ul>
+      </nav>
+
+      <article class="prose">
+        <h2 id="what-we-measure">What we measure</h2>
+        <p>
+          <strong>gmod-bench</strong> measures how well AI models handle the GMod
+          Lua questions addon developers care about: correct APIs, realms, security,
+          lifecycle, networking, and performance. Every challenge and scoring rule
+          is public, so results can be inspected instead of taken on trust.
+        </p>
+        <p>The leaderboard helps you compare:</p>
+        <ul>
+          <li>GMod API and realm knowledge</li>
+          <li>Safe, efficient addon coding choices</li>
+          <li>Consistency across model versions and reasoning levels</li>
+        </ul>
+        <p>
+          It is a practical comparison tool, not a claim that one score predicts
+          every possible addon task.
+        </p>
+
+        <h2 id="contract">Response contract</h2>
+        <p>
+          Before any rubric runs, shared validation requires exactly one final
+          response of this form:
+        </p>
+        <CodeBlock label="answer shape" code={contractExample} />
+        <ul>
+          <li>Fence language must be <code class="code-inline">lua</code></li>
+          <li>Exactly one fenced code block, then reason text</li>
+          <li>
+            Reason starts with <code class="code-inline">Reason:</code> and stays
+            within the max line count
+          </li>
+          <li>Loop-count and byte-cap constraints from the fixture contract</li>
+          <li>
+            No tool calls — <code class="code-inline">tool_calls</code> become policy
+            violations
+          </li>
+        </ul>
+        <p>
+          CLI attempts use a fresh empty temp workspace and isolated profile
+          directories. They require native non-interactive mode, deny-all agent
+          tools (where supported), and structured traces.
+        </p>
+
+        <h2 id="statuses">Status taxonomy</h2>
+        <p>
+          Wrong GMod content and protocol failures are different things.
+          Transport and format issues never get relabeled as “incorrect.”
+        </p>
+        <div class="status-list status-list--wide panel panel--pad">
+          <div class="status-row">
+            <code>pass</code>
+            <p>Scored answer matched a pass pattern or full plugin credit.</p>
+          </div>
+          <div class="status-row">
+            <code>partial</code>
+            <p>
+              Scored answer earned partial credit (plugin or graded partial).
+            </p>
+          </div>
+          <div class="status-row">
+            <code>incorrect</code>
+            <p>Well-formed answer that failed the oracle / rubric.</p>
+          </div>
+          <div class="status-row">
+            <code>protocol_error</code>
+            <p>
+              Format / contract failure (bad fence, missing Reason line, tools,
+              etc.) or transport failure before fair grading. Shown as “format”
+              on the leaderboard.
+            </p>
+          </div>
+          <div class="status-row">
+            <code>policy_violation</code>
+            <p>Tool or agent use detected when the contract forbids it.</p>
+          </div>
+          <div class="status-row">
+            <code>trace_error</code>
+            <p>
+              Wire format not understood — not the same as “CLI unsupported.”
+            </p>
+          </div>
+          <div class="status-row">
+            <code>timeout</code>
+            <p>Deadline exceeded for the attempt.</p>
+          </div>
+          <div class="status-row">
+            <code>unavailable</code>
+            <p>Binary or API key missing; not graded as incorrect.</p>
+          </div>
+          <div class="status-row">
+            <code>unsupported</code>
+            <p>
+              Adapter not eligible for strict scoring in the reviewed
+              configuration.
+            </p>
+          </div>
+        </div>
+
+        <h2 id="metrics">Metrics</h2>
+        <h3>Pass rate</h3>
+        <p>
+          <code class="code-inline">pass / scored</code>, where scored means
+          pass + partial + incorrect. Format errors do not count as wrong
+          answers in this rate.
+        </p>
+        <h3>Coverage</h3>
+        <p>
+          Fraction of attempts that produced a scorable answer. High pass rate
+          with low coverage usually means the model often fails the contract or
+          transport.
+        </p>
+        <h3>Fixture score (ranking metric)</h3>
+        <p>
+          Each attempt scores pass=1, partial=0.5, and every incorrect, format,
+          policy, timeout, or transport failure=0. Repeated attempts are
+          averaged inside their fixture first, then fixtures are averaged
+          equally. Ranks compare only rows with the same fixture set and repeat
+          count.
+        </p>
+        <h3>pass@k</h3>
+        <p>
+          With <code class="code-inline">--repeat K</code>, a fixture is solved
+          if any of the K attempts is a pass. Reported as pass@k rate over
+          fixtures. Use this for consistency, not luck of a single sample.
+        </p>
+        <h3>Scored quality (diagnostic)</h3>
+        <p>
+          Mean of pass=1, partial=0.5, incorrect=0 over scored attempts.
+          Complements raw pass rate when partial credit is common.
+        </p>
+
+        <h2 id="tokens">Tokens &amp; cost</h2>
+        <p>
+          When a provider reports token usage, the harness records
+          prompt/completion totals and estimated cost on the leaderboard. Some
+          adapters (notably certain CLI paths) may report zeros — that means
+          “not available from the provider,” not “free.” Prefer
+          provider-reported figures when present; treat missing usage as
+          unknown.
+        </p>
+        <p>
+          OpenRouter free (<code class="code-inline">:free</code>) slots still
+          consume free-tier RPM/RPD quota. Paid model ids skip the free limiter
+          and may still hit provider 429s.
+        </p>
+
+        <h2 id="runners">Runners</h2>
+        <h3>OpenRouter (HTTP)</h3>
+        <ul>
+          <li>
+            Strict when <code class="code-inline">OPENROUTER_API_KEY</code> is present
+          </li>
+          <li>
+            Free mode: live catalog of pure text→text chat models at $0; RPM/RPD
+            limiter from key tier
+          </li>
+          <li>Paid mode: explicit model ids, no free RPM/RPD gate</li>
+          <li>
+            Sampling fixed for fairness: temperature 0, top_p 1, fixed seed;
+            tools never requested
+          </li>
+        </ul>
+        <h3>CLI adapters</h3>
+        <ul>
+          <li>
+            <strong>claude</strong>, <strong>gemini</strong> — strict when help/policy
+            surface qualifies
+          </li>
+          <li>
+            <strong>AntiGravity</strong> — unsupported for strict scoring until the
+            CLI exposes a reviewed deny-all tool policy and structured trace contract.
+          </li>
+          <li>
+            <strong>codex</strong> — strict only when the reviewed read-only, no-network,
+            non-interactive controls are present.
+          </li>
+          <li>
+            <strong>grok</strong>, <strong>cursor</strong>, <strong
+              >devin</strong
+            > — unsupported until deny-all contracts are reviewed.
+          </li>
+        </ul>
+
+        <h2 id="fairness">Fairness notes</h2>
+        <ul>
+          <li>
+            <strong>Public fixtures</strong> — core GMod questions plus perf items
+            with a clear winner from Facepunch wiki / gmod-lua-performance. Myths
+            and ties are omitted.
+          </li>
+          <li>
+            <strong>No silent demotions</strong> — unavailable or unsupported runners
+            are never treated as incorrect answers.
+          </li>
+          <li>
+            <strong>Free-model quarantine</strong> — endpoints that never return answer
+            text can be skipped temporarily so dead free models do not burn the whole
+            RPM budget.
+          </li>
+          <li>
+            <strong>Reproducibility</strong> — every run writes an audit pack (report,
+            run.json with graded answers, attempts, responses, optional raw logs).
+          </li>
+        </ul>
+        <p>
+          Full CLI details live in the repo
+          <a href={site.github} rel="noopener noreferrer" target="_blank"
+            >README</a
+          >. Install steps are condensed on the <a href="/docs">docs</a> page.
+        </p>
+      </article>
+    </div>
+  </div>
+</BaseLayout>

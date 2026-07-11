@@ -1,0 +1,27 @@
+{
+  "id": "gmod.perf.config-var.v1",
+  "version": 1,
+  "title": "Config flat variable vs nested table",
+  "prompt": "In Garry's Mod Lua, which is faster for a frequently read addon setting: nested tables like myaddon.config.color, or a flat local/global variable?\n\nReturn exactly one fenced lua code block showing the preferred declaration and a read, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "Flat variable faster than nested table lookups",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/table_vs_variable.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "config-variable"
+  }
+}

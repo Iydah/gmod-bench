@@ -1,0 +1,27 @@
+{
+  "id": "gmod.perf.darkrpvar.v1",
+  "version": 1,
+  "title": "getDarkRPVar vs GetNWString for DarkRP job",
+  "prompt": "In Garry's Mod DarkRP server Lua, you need a player's job name often. Show the preferred API compared to ply:GetNWString(\"job\").\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "getDarkRPVar (server + network-friendly)",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/nwvar_vs_darkrpvar.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "darkrpvar"
+  }
+}

@@ -1,0 +1,139 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import LeaderboardTable from "../components/LeaderboardTable.astro";
+import site from "../data/site.json";
+import leaderboard from "../data/leaderboard.json";
+
+const installCode = `bun install
+bun run bench run --fixture all --codex --concurrency 8`;
+
+const dateLabel = new Date(
+  `${leaderboard.meta.date}T12:00:00`,
+).toLocaleDateString("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+---
+
+<BaseLayout pageId="home">
+  <section class="hero">
+    <div class="container">
+      <h1>{site.tagline}</h1>
+      <p class="hero__lead">
+        {site.description}
+      </p>
+      <div class="hero__cta">
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#leaderboard">Compare models</a>
+          <a
+            class="btn btn--secondary"
+            href={site.github}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            GitHub
+          </a>
+        </div>
+        <p class="meta-line">
+          <span>{site.suiteSize} fixtures</span>
+          <span aria-hidden="true">·</span>
+          <span>{leaderboard.models.length} models</span>
+          <span aria-hidden="true">·</span>
+          <span>{dateLabel}</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="section section--tight" id="leaderboard">
+    <div class="container">
+      <div class="section__header">
+        <div>
+          <h2 class="section__title">Leaderboard</h2>
+          <p class="section__desc">
+            See which models know GMod Lua best across {
+              leaderboard.meta.fixtureCount
+            } public coding challenges.
+          </p>
+        </div>
+        <a class="text-link" href="/leaderboard">View full leaderboard →</a>
+      </div>
+
+      <LeaderboardTable models={leaderboard.models.slice(0, 10)} />
+
+      <p class="text-sm text-muted mt-6">
+        {leaderboard.meta.disclaimer}
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="section section--tight" id="run">
+    <div class="container">
+      <div class="section__header">
+        <div>
+          <h2 class="section__title">Run locally</h2>
+          <p class="section__desc">
+            Needs Bun. Supports Codex, OpenCode, AntiGravity, and OpenRouter
+            (free or paid). Use the login that runner already expects.
+          </p>
+        </div>
+        <a class="text-link" href="/docs">Full docs →</a>
+      </div>
+
+      <ol class="run-steps">
+        <li>
+          <span class="run-steps__n">1</span>
+          <div>
+            <p class="run-steps__title">Install</p>
+            <p class="run-steps__body">
+              Clone the repo, then{" "}
+              <code class="code-inline">bun install</code>.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="run-steps__n">2</span>
+          <div>
+            <p class="run-steps__title">Pick a runner</p>
+            <p class="run-steps__body">
+              Codex, OpenCode, AntiGravity, or OpenRouter. For OpenRouter free,
+              put{" "}
+              <code class="code-inline">OPENROUTER_API_KEY</code>
+              {" "}in{" "}
+              <code class="code-inline">.env</code>.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="run-steps__n">3</span>
+          <div>
+            <p class="run-steps__title">Run</p>
+            <p class="run-steps__body">
+              Results write to{" "}
+              <code class="code-inline">.gmod-bench/runs/</code>.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <CodeBlock label="bash" code={installCode} />
+
+      <div class="link-row">
+        <a class="text-link" href="/methodology">How scoring works</a>
+        <a class="text-link" href="/docs">Commands</a>
+        <a
+          class="text-link"
+          href={site.github}
+          rel="noopener noreferrer"
+          target="_blank">GitHub</a
+        >
+      </div>
+    </div>
+  </section>
+</BaseLayout>

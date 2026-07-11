@@ -1,0 +1,26 @@
+{
+  "id": "gmod.isvalid.v1",
+  "version": 1,
+  "title": "Safe entity validity check",
+  "prompt": "In Garry's Mod Lua, show how to test whether an entity reference ent is still safe to use before calling methods on it.\n\nReturn exactly one fenced lua code block (a condition or short if-guard is fine), then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "IsValid",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/Global.IsValid"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "isvalid"
+  }
+}

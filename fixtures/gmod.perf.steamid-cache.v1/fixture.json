@@ -1,0 +1,27 @@
+{
+  "id": "gmod.perf.steamid-cache.v1",
+  "version": 1,
+  "title": "Cache SteamID lookups",
+  "prompt": "In Garry's Mod Lua, a hot path calls ply:SteamID() repeatedly for the same players. Show a faster caching pattern.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 2,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "Cache SteamID per player",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/steamid_cache.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "steamid-cache"
+  }
+}

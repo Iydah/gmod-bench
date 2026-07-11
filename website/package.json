@@ -1,0 +1,28 @@
+{
+  "name": "gmodbench-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Website for gmodbench.com — compare AI models for Garry's Mod coding",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "cf:types": "wrangler types",
+    "cf:dev": "bun run build && wrangler dev --config dist/server/wrangler.json",
+    "cf:deploy": "bun run build && wrangler deploy --config dist/server/wrangler.json",
+    "verify": "bun run check && bun run build && bun run scripts/verify-worker.ts"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "14.1.2",
+    "@astrojs/sitemap": "3.7.3",
+    "astro": "^7.0.7",
+    "simple-icons": "^16.25.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "typescript": "^5.9.3",
+    "wrangler": "4.110.0"
+  }
+}

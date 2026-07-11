@@ -1,0 +1,14 @@
+{
+  "id": "gmod.sqlite-typed-write.v1",
+  "version": 1,
+  "title": "Typed SQLite write for untrusted text",
+  "prompt": "In server-side Garry's Mod Lua, insert untrusted variable text into notes(text) using the current preferred safe SQLite API. Handle a query error explicitly.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 0, "maxCandidateLoops": 0, "maxAnswerBytes": 3072 },
+  "oracle": {
+    "expectedPrimitive": "sql.QueryTyped parameter binding plus false/sql.LastError handling",
+    "sourceUrls": ["https://wiki.facepunch.com/gmod/sql.QueryTyped", "https://wiki.facepunch.com/gmod/sql.LastError", "https://wiki.facepunch.com/gmod/sql.SQLStr"],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "sqlite-typed-write" }
+}

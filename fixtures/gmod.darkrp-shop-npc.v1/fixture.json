@@ -1,0 +1,31 @@
+{
+  "id": "gmod.darkrp-shop-npc.v1",
+  "version": 1,
+  "title": "Production DarkRP shop NPC",
+  "prompt": "Make a DarkRP shop NPC that players can use to buy items.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 1,
+    "maxCandidateLoops": 3,
+    "maxAnswerBytes": 16384
+  },
+  "oracle": {
+    "expectedPrimitive": "server-authoritative, proximity-bound shop session with early per-player network throttling, compact item IDs, targeted networking, validated DarkRP purchase order, and lifecycle cleanup",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/Net_Library_Usage",
+      "https://wiki.facepunch.com/gmod/net.Receive",
+      "https://wiki.facepunch.com/gmod/util.AddNetworkString",
+      "https://wiki.facepunch.com/gmod/net.Send",
+      "https://wiki.facepunch.com/gmod/Vector:DistToSqr",
+      "https://wiki.facepunch.com/gmod/Entity:SetUseType",
+      "https://wiki.facepunch.com/gmod/ENTITY:Use",
+      "https://wiki.facepunch.com/gmod/GM:PlayerDisconnected",
+      "https://wiki.facepunch.com/gmod/GM:EntityRemoved"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "shop-npc" }
+}

@@ -1,0 +1,15 @@
+{
+  "defaultRepeat": 3,
+  "timeoutSeconds": 180,
+  "concurrency": 8,
+  "runners": {
+    "openrouter": {
+      "models": [
+        "openai/gpt-4o-mini",
+        "anthropic/claude-sonnet-4",
+        "google/gemini-2.5-flash",
+        "x-ai/grok-3-mini"
+      ]
+    }
+  }
+}

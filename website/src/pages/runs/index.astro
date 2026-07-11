@@ -1,0 +1,474 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../../components/Icon.astro";
+import archive from "../../data/runs.json";
+import {
+  adapterLabel,
+  adaptersLabel,
+  formatCompact,
+  formatDuration,
+  formatInt,
+  formatRunDate,
+  formatRunDateTime,
+  searchableRun,
+  shortRunId,
+} from "../../lib/runs-view";
+import "../../styles/runs.css";
+/* Dropdowns share leaderboard control chrome (not via LeaderboardTable here) */
+import "../../styles/leaderboard-controls.css";
+
+const runs = [...archive.runs].sort(
+  (a, b) =>
+    new Date(b.completedAt ?? 0).getTime() -
+    new Date(a.completedAt ?? 0).getTime(),
+);
+
+const adapters = [...new Set(runs.flatMap((run) => run.adapters))].sort();
+const uniqueModels = new Set(runs.flatMap((run) => run.modelIds)).size;
+const totalAttempts = runs.reduce((total, run) => total + run.attemptCount, 0);
+const latestCompleted = runs[0]?.completedAt ?? null;
+
+const stats = [
+  { value: String(runs.length), label: "Runs" },
+  {
+    value: formatCompact(totalAttempts),
+    label: "Attempts",
+    title: formatInt(totalAttempts),
+  },
+  { value: String(uniqueModels), label: "Models" },
+  { value: String(adapters.length), label: "Adapters" },
+];
+---
+
+<BaseLayout pageId="runs">
+  <div class="container runs-page">
+    <header class="runs-hero">
+      <div class="runs-hero__top">
+        <h1 class="runs-hero__title">Runs</h1>
+        {
+          latestCompleted && (
+            <p class="runs-hero__updated">{formatRunDate(latestCompleted)}</p>
+          )
+        }
+      </div>
+      <p class="runs-hero__lead">
+        Explore the runs behind the leaderboard. See which models were tested,
+        how they scored, and the answers that produced each result.
+      </p>
+
+      <div class="runs-stats" role="list">
+        {
+          stats.map((s) => (
+            <div class="runs-stat" role="listitem" title={s.title}>
+              <div class="runs-stat__value">{s.value}</div>
+              <div class="runs-stat__label">{s.label}</div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="runs-adapters" aria-label="Adapters in archive">
+        {
+          adapters.map((id) => (
+            <span class="runs-pill">{adapterLabel(id)}</span>
+          ))
+        }
+        <a class="runs-pill runs-pill--link" href="/runs/index.html.md">
+          Machine index
+        </a>
+      </div>
+    </header>
+
+    <section class="runs-board" aria-labelledby="runs-list-title">
+      <div class="runs-board__head">
+        <h2 id="runs-list-title" class="runs-board__title">All runs</h2>
+        <p class="runs-board__count" aria-live="polite">
+          <span data-visible-count>{runs.length}</span>
+          <span data-count-label>
+            {runs.length === 1 ? "run" : "runs"}
+          </span>
+        </p>
+      </div>
+
+      <div class="runs-toolbar" role="search">
+        <label class="table-search">
+          <Icon name="magnifying-glass" size={15} />
+          <span class="sr-only">Search runs</span>
+          <input
+            type="search"
+            class="table-search__input"
+            placeholder="Search model, adapter, fixture, run id…"
+            autocomplete="off"
+            spellcheck="false"
+            data-run-search
+          />
+        </label>
+
+        <div class="table-filters">
+          <div class="lb-menu" data-run-adapter data-value="">
+            <button
+              type="button"
+              class="lb-menu__trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              <span class="lb-menu__kicker">Adapter</span>
+              <span class="lb-menu__sep" aria-hidden="true"></span>
+              <span class="lb-menu__value" data-run-menu-value>All</span>
+              <Icon name="caret-down" size={11} class="lb-menu__caret" />
+            </button>
+            <div class="lb-menu__panel" role="listbox" hidden>
+              <button
+                type="button"
+                class="lb-menu__option"
+                role="option"
+                data-value=""
+                aria-selected="true"
+              >
+                <Icon name="check" size={12} class="lb-menu__check" />
+                <span>All adapters</span>
+              </button>
+              {
+                adapters.map((adapter) => (
+                  <button
+                    type="button"
+                    class="lb-menu__option"
+                    role="option"
+                    data-value={adapter}
+                    aria-selected="false"
+                  >
+                    <Icon name="check" size={12} class="lb-menu__check" />
+                    <span>{adapterLabel(adapter)}</span>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+
+          <div class="lb-menu" data-run-sort data-value="newest">
+            <button
+              type="button"
+              class="lb-menu__trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              <span class="lb-menu__kicker">Sort</span>
+              <span class="lb-menu__sep" aria-hidden="true"></span>
+              <span class="lb-menu__value" data-run-menu-value>Newest</span>
+              <Icon name="caret-down" size={11} class="lb-menu__caret" />
+            </button>
+            <div class="lb-menu__panel" role="listbox" hidden>
+              <button
+                type="button"
+                class="lb-menu__option"
+                role="option"
+                data-value="newest"
+                aria-selected="true"
+              >
+                <Icon name="check" size={12} class="lb-menu__check" />
+                <span>Newest</span>
+              </button>
+              <button
+                type="button"
+                class="lb-menu__option"
+                role="option"
+                data-value="oldest"
+                aria-selected="false"
+              >
+                <Icon name="check" size={12} class="lb-menu__check" />
+                <span>Oldest</span>
+              </button>
+              <button
+                type="button"
+                class="lb-menu__option"
+                role="option"
+                data-value="attempts"
+                aria-selected="false"
+              >
+                <Icon name="check" size={12} class="lb-menu__check" />
+                <span>Attempts</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="table-clear" data-run-clear hidden>
+          <Icon name="x" size={14} />
+          Clear
+        </button>
+      </div>
+
+      <div class="run-list" data-run-list>
+        {
+          runs.map((run, index) => {
+            const modelCount = run.modelIds.length;
+            return (
+              <a
+                class="run-card"
+                href={`/runs/${run.runId}`}
+                data-run-row
+                data-search={searchableRun(run)}
+                data-adapters={run.adapters.join(" ")}
+                data-completed={run.completedAt ?? ""}
+                data-attempts={run.attemptCount}
+              >
+                <div class="run-card__main">
+                  <div class="run-card__title-row">
+                    {index === 0 && (
+                      <span class="run-card__latest">Latest</span>
+                    )}
+                    <span class="run-card__title">
+                      {adaptersLabel(run.adapters)}
+                    </span>
+                    <span class="run-card__models">
+                      {modelCount} {modelCount === 1 ? "model" : "models"}
+                    </span>
+                  </div>
+                  <p class="run-card__meta">
+                    <time datetime={run.completedAt ?? undefined}>
+                      {formatRunDateTime(run.completedAt)}
+                    </time>
+                    <span aria-hidden="true">·</span>
+                    <span>
+                      {formatDuration(run.startedAt, run.completedAt)}
+                    </span>
+                  </p>
+                </div>
+
+                <dl class="run-card__metrics">
+                  <div>
+                    <dt>Fixtures</dt>
+                    <dd>{run.fixtureCount}</dd>
+                  </div>
+                  <div>
+                    <dt>Attempts</dt>
+                    <dd>{formatInt(run.attemptCount)}</dd>
+                  </div>
+                  <div>
+                    <dt>Repeat</dt>
+                    <dd>×{run.repeat}</dd>
+                  </div>
+                </dl>
+
+                <div class="run-card__end">
+                  <code class="run-card__id" title={run.runId}>
+                    {shortRunId(run.runId)}
+                  </code>
+                  <span class="run-card__go" aria-hidden="true">
+                    →
+                  </span>
+                </div>
+              </a>
+            );
+          })
+        }
+      </div>
+
+      <div class="runs-empty" data-runs-empty hidden>
+        <p class="runs-empty__title">No matching runs</p>
+        <p class="runs-empty__body">
+          Try a model name, adapter, fixture id, or clear filters.
+        </p>
+        <button type="button" class="runs-empty__btn" data-run-clear-empty>
+          Clear filters
+        </button>
+      </div>
+    </section>
+
+    <footer class="runs-footnote">
+      <p class="runs-footnote__text">
+        Snapshots are sanitized and immutable. No raw process logs or
+        credentials.
+      </p>
+      <p class="runs-footnote__links">
+        <a href="/methodology">Methodology</a>
+        <span class="runs-footnote__dot" aria-hidden="true">·</span>
+        <a href="/leaderboard">Leaderboard</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    const search = document.querySelector("[data-run-search]");
+    const adapterMenu =
+      document.querySelector<HTMLElement>("[data-run-adapter]");
+    const sortMenu = document.querySelector<HTMLElement>("[data-run-sort]");
+    const list = document.querySelector("[data-run-list]");
+    const count = document.querySelector("[data-visible-count]");
+    const countLabel = document.querySelector("[data-count-label]");
+    const empty = document.querySelector("[data-runs-empty]");
+    const clearButtons = document.querySelectorAll(
+      "[data-run-clear], [data-run-clear-empty]",
+    );
+    const clearBtn =
+      document.querySelector<HTMLButtonElement>("[data-run-clear]");
+
+    function menuValue(menu: HTMLElement | null): string {
+      return menu?.dataset.value ?? "";
+    }
+
+    function closeMenu(menu: HTMLElement | null): void {
+      if (!menu) return;
+      menu.classList.remove("lb-menu--open");
+      menu
+        .querySelector(".lb-menu__trigger")
+        ?.setAttribute("aria-expanded", "false");
+      const panel = menu.querySelector<HTMLElement>(".lb-menu__panel");
+      if (panel) panel.hidden = true;
+    }
+
+    function closeAllMenus(except: HTMLElement | null = null): void {
+      for (const menu of document.querySelectorAll<HTMLElement>(
+        ".runs-toolbar .lb-menu.lb-menu--open",
+      )) {
+        if (menu !== except) closeMenu(menu);
+      }
+    }
+
+    function setMenuValue(menu: HTMLElement | null, value: string): void {
+      if (!menu) return;
+      menu.dataset.value = value;
+      const isDefault = menu.hasAttribute("data-run-adapter")
+        ? value === ""
+        : value === "newest";
+      menu.classList.toggle("lb-menu--active", !isDefault);
+
+      let label = menu.hasAttribute("data-run-adapter") ? "All" : "Newest";
+      for (const option of menu.querySelectorAll<HTMLElement>(
+        ".lb-menu__option",
+      )) {
+        const selected = (option.dataset.value ?? "") === value;
+        option.setAttribute("aria-selected", selected ? "true" : "false");
+        if (selected) {
+          label =
+            option.querySelector("span")?.textContent?.trim() ??
+            (value || label);
+          if (menu.hasAttribute("data-run-adapter") && value === "") {
+            label = "All";
+          }
+        }
+      }
+      const valueEl = menu.querySelector<HTMLElement>("[data-run-menu-value]");
+      if (valueEl) valueEl.textContent = label;
+      closeMenu(menu);
+    }
+
+    function bindMenu(menu: HTMLElement | null, onChange: () => void): void {
+      if (!menu) return;
+      menu
+        .querySelector(".lb-menu__trigger")
+        ?.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const open = menu.classList.contains("lb-menu--open");
+          closeAllMenus(menu);
+          if (open) closeMenu(menu);
+          else {
+            menu.classList.add("lb-menu--open");
+            menu
+              .querySelector(".lb-menu__trigger")
+              ?.setAttribute("aria-expanded", "true");
+            const panel = menu.querySelector<HTMLElement>(".lb-menu__panel");
+            if (panel) panel.hidden = false;
+          }
+        });
+      for (const option of menu.querySelectorAll<HTMLElement>(
+        ".lb-menu__option",
+      )) {
+        option.addEventListener("click", (event) => {
+          event.stopPropagation();
+          setMenuValue(menu, option.dataset.value ?? "");
+          onChange();
+        });
+      }
+    }
+
+    if (
+      search instanceof HTMLInputElement &&
+      adapterMenu instanceof HTMLElement &&
+      sortMenu instanceof HTMLElement &&
+      list instanceof HTMLElement &&
+      count instanceof HTMLElement &&
+      empty instanceof HTMLElement
+    ) {
+      const rows = Array.from(
+        list.querySelectorAll<HTMLElement>("[data-run-row]"),
+      );
+      const params = new URLSearchParams(window.location.search);
+      search.value = params.get("q") ?? "";
+      setMenuValue(adapterMenu, params.get("adapter") ?? "");
+      setMenuValue(sortMenu, params.get("sort") ?? "newest");
+
+      const update = () => {
+        const query = search.value.trim().toLocaleLowerCase("en");
+        const selectedAdapter = menuValue(adapterMenu);
+        const sortValue = menuValue(sortMenu) || "newest";
+        let visible = 0;
+
+        for (const row of rows) {
+          const matchesSearch = !query || row.dataset.search?.includes(query);
+          const matchesAdapter =
+            !selectedAdapter ||
+            row.dataset.adapters?.split(" ").includes(selectedAdapter);
+          row.hidden = !(matchesSearch && matchesAdapter);
+          if (!row.hidden) visible += 1;
+        }
+
+        const direction = sortValue === "oldest" ? 1 : -1;
+        rows.sort((a, b) => {
+          if (sortValue === "attempts") {
+            return Number(b.dataset.attempts) - Number(a.dataset.attempts);
+          }
+          return (
+            direction *
+            (Date.parse(a.dataset.completed ?? "") -
+              Date.parse(b.dataset.completed ?? ""))
+          );
+        });
+        list.replaceChildren(...rows);
+
+        count.textContent = String(visible);
+        if (countLabel) {
+          countLabel.textContent = visible === 1 ? "run" : "runs";
+        }
+        empty.hidden = visible !== 0;
+
+        if (clearBtn) {
+          clearBtn.hidden =
+            !search.value.trim() && !selectedAdapter && sortValue === "newest";
+        }
+
+        const next = new URLSearchParams();
+        if (search.value.trim()) next.set("q", search.value.trim());
+        if (selectedAdapter) next.set("adapter", selectedAdapter);
+        if (sortValue !== "newest") next.set("sort", sortValue);
+        const qs = next.toString();
+        history.replaceState(
+          null,
+          "",
+          `${location.pathname}${qs ? `?${qs}` : ""}`,
+        );
+      };
+
+      const clear = () => {
+        search.value = "";
+        setMenuValue(adapterMenu, "");
+        setMenuValue(sortMenu, "newest");
+        search.focus();
+        update();
+      };
+
+      document.addEventListener("click", () => closeAllMenus());
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeAllMenus();
+      });
+
+      search.addEventListener("input", update);
+      bindMenu(adapterMenu, update);
+      bindMenu(sortMenu, update);
+      for (const btn of clearButtons) {
+        btn.addEventListener("click", clear);
+      }
+      update();
+    }
+  </script>
+</BaseLayout>

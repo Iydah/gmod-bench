@@ -1,0 +1,14 @@
+{
+  "id": "gmod.realm-shared-authority.v1",
+  "version": 1,
+  "title": "Shared loading with server authority",
+  "prompt": "Show the Garry's Mod Lua loading shape for myaddon/shared.lua so clients receive it and both realms include it, while an ApplyDamage action remains server-authoritative and checks the player before damaging an entity.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 0, "maxCandidateLoops": 0, "maxAnswerBytes": 4096 },
+  "oracle": {
+    "expectedPrimitive": "server AddCSLuaFile, shared include, server-only authoritative mutation",
+    "sourceUrls": ["https://wiki.facepunch.com/gmod/States_/_Realms", "https://wiki.facepunch.com/gmod/Global.AddCSLuaFile", "https://wiki.facepunch.com/gmod/Global.include"],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "realm-loading" }
+}

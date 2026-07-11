@@ -1,0 +1,27 @@
+{
+  "id": "gmod.perf.ents-iterator.v1",
+  "version": 1,
+  "title": "ents.Iterator for all entities",
+  "prompt": "In Garry's Mod Lua, write a loop that visits every entity, preferring the wiki-recommended efficient iterator when appropriate.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 1,
+    "maxCandidateLoops": 2,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "ents.Iterator",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/ents.Iterator",
+      "https://github.com/OverlordAkise/gmod-lua-performance"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "entity-iterator"
+  }
+}

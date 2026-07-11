@@ -1,0 +1,27 @@
+{
+  "id": "gmod.perf.hudpaint-cache.v1",
+  "version": 1,
+  "title": "Cache repeated LocalPlayer work in HUDPaint",
+  "prompt": "In Garry's Mod client Lua, a HUDPaint hook calls LocalPlayer():Health() three separate times in one frame for drawing. Show a faster version of those three draw calls.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "Cache LocalPlayer()/Health once per paint",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/hudpaint_3call_cache.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "hudpaint-cache"
+  }
+}

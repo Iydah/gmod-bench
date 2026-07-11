@@ -1,0 +1,37 @@
+{
+  "id": "gmod.perf.plain-lua-vs-fn.v1",
+  "version": 1,
+  "title": "Plain Lua vs DarkRP fn combinators",
+  "prompt": "In Garry's Mod DarkRP Lua, you need a small pipeline of list transforms (filter/map style). Show a faster approach than DarkRP's fn combinator library for the same work.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 2,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "plain for-loops / local functions over DarkRP fn",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/darkrp_fn_vs_standard_lua.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "for\\s+[\\w_,\\s]+\\s+in\\s+",
+      "for\\s+\\w+\\s*=\\s*1\\s*,"
+    ],
+    "partialPatterns": [
+      "function\\s*\\("
+    ],
+    "incorrectPatterns": [
+      "\\bfn\\.",
+      "fn\\["
+    ]
+  }
+}

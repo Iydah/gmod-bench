@@ -1,0 +1,412 @@
+/* Table toolbar */
+.table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.625rem;
+  margin-bottom: var(--space-4);
+}
+
+.table-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: min(100%, 13rem);
+  flex: 1 1 11rem;
+  max-width: 16rem;
+  height: 2rem;
+  padding: 0 0.625rem;
+  border: 0;
+  border-radius: var(--radius-chip);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-border);
+  transition-property: box-shadow, color, background-color;
+  transition-duration: 150ms;
+  transition-timing-function: var(--ease-out);
+}
+
+.table-search:hover {
+  box-shadow: var(--shadow-border-hover);
+}
+
+.table-search:focus-within {
+  color: var(--text-secondary);
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.45),
+    0 0 0 3px var(--accent-soft);
+}
+
+.table-search__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.table-search__input::placeholder {
+  color: var(--text-dim);
+}
+
+.table-filters {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+/* Custom filter menus — compact chips + polished panel */
+.lb-menu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.lb-menu__trigger {
+  appearance: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 2rem;
+  /* Optical: less padding on caret side (text-side − optical nudge) */
+  padding: 0 calc(0.55rem - var(--optical-nudge)) 0 0.55rem;
+  border: 0;
+  border-radius: var(--radius-chip);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-border);
+  transition-property: box-shadow, background-color, transform, color;
+  transition-duration: 150ms;
+  transition-timing-function: var(--ease-out);
+}
+
+/* Expand hit area vertically; keep horizontal tight so adjacent chips don't collide */
+.lb-menu__trigger::after {
+  content: "";
+  position: absolute;
+  inset: -0.25rem -0.1rem;
+}
+
+.lb-menu__trigger:hover {
+  background: var(--bg-soft);
+  box-shadow: var(--shadow-border-hover);
+}
+
+.lb-menu__trigger:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.45),
+    0 0 0 3px var(--accent-soft);
+}
+
+.lb-menu__trigger:active {
+  transform: scale(0.96);
+}
+
+.lb-menu--open .lb-menu__trigger {
+  background: var(--bg-soft);
+  box-shadow: var(--shadow-border-hover);
+}
+
+.lb-menu--active .lb-menu__trigger {
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 1px rgba(112, 163, 243, 0.28);
+}
+
+.lb-menu__kicker {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.lb-menu__sep {
+  width: 1px;
+  height: 0.65rem;
+  margin-inline: 0.05rem;
+  background: rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+.lb-menu__value {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.lb-menu--active .lb-menu__value {
+  color: var(--text);
+}
+
+.lb-menu__caret {
+  flex-shrink: 0;
+  color: var(--text-dim);
+  transition-property: transform, color;
+  transition-duration: 160ms;
+  transition-timing-function: var(--ease-out);
+}
+
+.lb-menu--open .lb-menu__caret {
+  transform: rotate(180deg);
+  color: var(--text-secondary);
+}
+
+.lb-menu__panel {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  left: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 11rem;
+  width: max-content;
+  max-width: 15rem;
+  /* Concentric: outer 12px, pad 6px → option radius ~6–8px */
+  padding: 0.375rem;
+  border: 0;
+  border-radius: var(--radius-menu);
+  background: #141414;
+  box-shadow: var(--shadow-menu);
+}
+
+.lb-menu__panel[hidden] {
+  display: none;
+}
+
+.lb-menu__option {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 2.125rem;
+  padding: 0.5rem 0.625rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  transition-property: background-color, color, transform;
+  transition-duration: 120ms;
+  transition-timing-function: var(--ease-out);
+}
+
+.lb-menu__option:hover,
+.lb-menu__option:focus-visible {
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--text);
+  outline: none;
+}
+
+.lb-menu__option:active {
+  transform: scale(0.98);
+}
+
+.lb-menu__option[aria-selected="true"] {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.lb-menu__check {
+  flex-shrink: 0;
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--accent);
+  opacity: 0;
+  transform: scale(0.85);
+  transition-property: opacity, transform;
+  transition-duration: 120ms;
+  transition-timing-function: var(--ease-out);
+}
+
+.lb-menu__option[aria-selected="true"] .lb-menu__check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.table-clear {
+  appearance: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  height: 2rem;
+  padding: 0 0.5rem 0 0.45rem;
+  border: 0;
+  border-radius: var(--radius-chip);
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition-property: color, background-color, transform;
+  transition-duration: 150ms;
+  transition-timing-function: var(--ease-out);
+}
+
+.table-clear::after {
+  content: "";
+  position: absolute;
+  inset: -0.25rem -0.15rem;
+}
+
+.table-clear:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.table-clear:active {
+  transform: scale(0.96);
+}
+
+.table-clear[hidden] {
+  display: none;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.model-name-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+}
+
+.tip {
+  position: relative;
+  z-index: 1;
+  cursor: help;
+}
+
+/*
+ * Plain text tips only — do NOT reset chrome on:
+ * - .think-badge / .repeat-badge (pills)
+ * - .th-label (dotted underline on column headers)
+ */
+.tip:not(.think-badge):not(.repeat-badge):not(.th-label) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.tip:hover,
+.tip:focus-visible {
+  z-index: 80;
+}
+
+.tip:not(.think-badge):not(.repeat-badge):not(.th-label):hover,
+.tip:not(.think-badge):not(.repeat-badge):not(.th-label):focus-visible {
+  color: var(--text-secondary);
+}
+
+button.tip {
+  color: var(--text-dim);
+}
+
+button.tip:hover,
+button.tip:focus-visible {
+  color: var(--text-secondary);
+}
+
+/* Idle tips must not generate a box — visibility:hidden still expands
+   scrollable overflow and causes a phantom horizontal scrollbar. */
+.tip::after {
+  content: none;
+}
+
+/* Pseudo tips only outside scroll tables (menus, etc.).
+   Inside .table-wrap we use a fixed #lb-tip-float so nothing clips under the table. */
+.tip:hover::after,
+.tip:focus-visible::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(16rem, 70vw);
+  padding: 0.4rem 0.55rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: #161616;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.4;
+  white-space: normal;
+  text-align: left;
+  pointer-events: none;
+  z-index: 90;
+  box-shadow: var(--shadow-menu);
+}
+
+.table-wrap .tip:hover::after,
+.table-wrap .tip:focus-visible::after {
+  content: none;
+}
+
+/* Headers sit at the top — show tip underneath so it isn't clipped */
+.tip--below:hover::after,
+.tip--below:focus-visible::after {
+  bottom: auto;
+  top: calc(100% + 6px);
+}
+
+.table-wrap .tip--below:hover::after,
+.table-wrap .tip--below:focus-visible::after {
+  content: none;
+}
+
+.tip--wide:hover::after,
+.tip--wide:focus-visible::after {
+  max-width: min(18rem, 70vw);
+}
+
+/* Fixed floating tip (body portal) — always above table chrome */
+.tip-float {
+  position: fixed;
+  z-index: 200;
+  max-width: min(18rem, calc(100vw - 1rem));
+  padding: 0.4rem 0.55rem;
+  border-radius: var(--radius);
+  background: #161616;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: normal;
+  text-align: left;
+  pointer-events: none;
+  box-shadow: var(--shadow-menu);
+}
+
+.tip-float[hidden] {
+  display: none !important;
+}

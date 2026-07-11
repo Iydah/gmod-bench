@@ -1,0 +1,48 @@
+---
+import "../styles/global.css";
+import "../styles/content.css";
+import "../styles/pages.css";
+import { Font } from "astro:assets";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import SeoHead from "../components/SeoHead.astro";
+import type { PageId } from "../content/site-content";
+import type { PublishedRun } from "../lib/published-runs";
+
+interface Props {
+  pageId: PageId;
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  run?: PublishedRun;
+}
+
+const { pageId, title, description, canonicalPath, run } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <SeoHead {pageId} {title} {description} {canonicalPath} {run} />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" preload />
+  </head>
+  <body>
+    <div class="site">
+      <Header />
+      <main class="site-main" id="main">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

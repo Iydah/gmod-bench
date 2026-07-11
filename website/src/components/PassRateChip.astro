@@ -1,0 +1,21 @@
+---
+interface Props {
+  rate: number | null | undefined;
+  label?: string;
+}
+
+const { rate, label } = Astro.props;
+
+const display =
+  label ??
+  (rate == null || Number.isNaN(rate) ? "—" : `${(rate * 100).toFixed(1)}%`);
+
+let variant = "rate--neutral";
+if (rate != null && !Number.isNaN(rate)) {
+  if (rate >= 0.8) variant = "rate--pass";
+  else if (rate >= 0.5) variant = "rate--mid";
+  else variant = "rate--low";
+}
+---
+
+<span class={`rate ${variant}`}>{display}</span>

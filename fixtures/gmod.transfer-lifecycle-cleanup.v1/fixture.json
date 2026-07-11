@@ -1,0 +1,26 @@
+{
+  "id": "gmod.transfer-lifecycle-cleanup.v1",
+  "version": 1,
+  "title": "Clean two-party transfer state",
+  "prompt": "In server-side Garry's Mod Lua, transfers is keyed by either player and each value contains peer and lastActivity. Write one reusable cancellation function plus hooks that remove both sides of a transfer when either player disconnects or after 30 seconds of inactivity. Notify a still-valid peer with notifyCancelled(peer). Check timeouts once per second.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 1,
+    "maxCandidateLoops": 1,
+    "maxAnswerBytes": 8192
+  },
+  "oracle": {
+    "expectedPrimitive": "central idempotent two-peer cleanup called from PlayerDisconnected and a bounded periodic inactivity sweep",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/GM:PlayerDisconnected",
+      "https://wiki.facepunch.com/gmod/timer.Create",
+      "https://wiki.facepunch.com/gmod/Global.CurTime",
+      "https://wiki.facepunch.com/gmod/Global.IsValid"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "transfer-cleanup" }
+}

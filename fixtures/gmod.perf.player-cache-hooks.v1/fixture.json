@@ -1,0 +1,37 @@
+{
+  "id": "gmod.perf.player-cache-hooks.v1",
+  "version": 1,
+  "title": "Cache player list across ticks",
+  "prompt": "In Garry's Mod server Lua, a Tick/Think hook currently does ipairs(player.GetAll()) every tick. Show a faster pattern that keeps a cached player table and refreshes it only when players join or leave (not every tick).\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 3,
+    "maxAnswerBytes": 3072
+  },
+  "oracle": {
+    "expectedPrimitive": "cached player.GetAll refreshed on connect/disconnect (or player.Iterator)",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/optimizationTips",
+      "https://wiki.facepunch.com/gmod/player.Iterator",
+      "https://github.com/OverlordAkise/gmod-lua-performance"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "player\\.Iterator",
+      "(PlayerInitialSpawn|PlayerConnect|PlayerDisconnected|OnEntityCreated|EntityRemoved)[\\s\\S]*player\\.GetAll",
+      "player\\.GetAll[\\s\\S]*(PlayerInitialSpawn|PlayerConnect|PlayerDisconnected|OnEntityCreated|EntityRemoved)"
+    ],
+    "partialPatterns": [
+      "player\\.GetAll",
+      "ipairs\\s*\\(\\s*player"
+    ],
+    "incorrectPatterns": []
+  }
+}

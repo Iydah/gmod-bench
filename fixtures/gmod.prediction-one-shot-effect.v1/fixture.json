@@ -1,0 +1,14 @@
+{
+  "id": "gmod.prediction-one-shot-effect.v1",
+  "version": 1,
+  "title": "Prediction-safe one-shot SWEP effect",
+  "prompt": "Implement the relevant shape of SWEP:PrimaryAttack: update SetNextPrimaryFire for prediction on every pass, but dispatch util.Effect only once with IsFirstTimePredicted. Do not guard the entire attack.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 0, "maxCandidateLoops": 0, "maxAnswerBytes": 4096 },
+  "oracle": {
+    "expectedPrimitive": "predicted state outside and one-shot effect inside IsFirstTimePredicted",
+    "sourceUrls": ["https://wiki.facepunch.com/gmod/prediction", "https://wiki.facepunch.com/gmod/Global.IsFirstTimePredicted"],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "prediction-effect" }
+}

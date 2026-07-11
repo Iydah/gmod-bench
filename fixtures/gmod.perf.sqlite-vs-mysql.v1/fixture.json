@@ -1,0 +1,27 @@
+{
+  "id": "gmod.perf.sqlite-vs-mysql.v1",
+  "version": 1,
+  "title": "SQLite vs MySQL for single-server storage",
+  "prompt": "In Garry's Mod, for a single game server storing player data with no multi-server sync requirement, which storage approach is typically lower latency for reads/writes: local SQLite (sql library) or remote MySQL?\n\nReturn exactly one fenced lua code block showing the preferred API style for a simple query, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "sql.Query / SQLite for single-server latency",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://shira.at/gmod/mysql_sqlite.html"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "local-sqlite"
+  }
+}

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17243a" />
+      <stop offset="1" stop-color="#0a0a0a" />
+    </linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="70" /></filter>
+  </defs>
+  <rect width="1200" height="630" fill="#0a0a0a" />
+  <circle cx="1020" cy="80" r="260" fill="#0081ff" opacity=".18" filter="url(#blur)" />
+  <rect x="42" y="42" width="1116" height="546" rx="32" fill="url(#glow)" stroke="#262a31" />
+  <image href="gmod-logo.svg" x="96" y="94" width="82" height="82" />
+  <text x="204" y="151" fill="#f6f7f9" font-family="Geist Sans, Arial" font-size="46" font-weight="600">gmod-bench</text>
+  <text x="96" y="282" fill="#f6f7f9" font-family="Geist Sans, Arial" font-size="62" font-weight="600">Strict GMod answers.</text>
+  <text x="96" y="352" fill="#9ca3af" font-family="Geist Sans, Arial" font-size="30">Public fixtures. Deterministic rubrics. Auditable runs.</text>
+  <g transform="translate(96 434)">
+    <rect width="292" height="72" rx="16" fill="#111820" stroke="#263648" />
+    <circle cx="40" cy="36" r="10" fill="#42d392" />
+    <text x="66" y="45" fill="#d8dee8" font-family="Geist Mono, Consolas" font-size="24">one lua block</text>
+    <rect x="316" width="260" height="72" rx="16" fill="#111820" stroke="#263648" />
+    <circle cx="356" cy="36" r="10" fill="#70a3f3" />
+    <text x="382" y="45" fill="#d8dee8" font-family="Geist Mono, Consolas" font-size="24">one reason</text>
+    <rect x="600" width="226" height="72" rx="16" fill="#111820" stroke="#263648" />
+    <circle cx="640" cy="36" r="10" fill="#f2b84b" />
+    <text x="666" y="45" fill="#d8dee8" font-family="Geist Mono, Consolas" font-size="24">no tools</text>
+  </g>
+</svg>

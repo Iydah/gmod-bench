@@ -1,0 +1,32 @@
+{
+  "id": "gmod.perf.x-times-x.v1",
+  "version": 1,
+  "title": "x*x vs x^2 for squaring",
+  "prompt": "In Garry's Mod Lua, you need to square a number x in a tight loop. Show a preferred fast form.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 1,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "x*x or x^2 (avoid math.pow)",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/x_squared_vs_x_times.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "(?:=|return|\\()\\s*(\\w+)\\s*\\*\\s*\\1",
+      "(?:=|return|\\()\\s*\\w+\\s*\\^\\s*2"
+    ],
+    "partialPatterns": [],
+    "incorrectPatterns": ["math\\.pow"]
+  }
+}

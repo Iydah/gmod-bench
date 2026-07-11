@@ -1,0 +1,11 @@
+{
+  "name": "gmod-bench",
+  "domain": "gmodbench.com",
+  "url": "https://gmodbench.com",
+  "github": "https://github.com/Iydah/gmod-bench",
+  "tagline": "Find the best AI models for Garry's Mod development.",
+  "description": "gmod-bench tests how well AI models write real Garry's Mod Lua, so you can choose the right model for your next addon.",
+  "install": "bun install",
+  "doctor": "bun run bench doctor",
+  "suiteSize": 57
+}

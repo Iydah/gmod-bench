@@ -1,0 +1,5 @@
+Contact: https://github.com/Iydah/gmod-bench/security/advisories/new
+Expires: 2027-07-10T00:00:00.000Z
+Canonical: https://gmodbench.com/.well-known/security.txt
+Preferred-Languages: en
+Policy: https://github.com/Iydah/gmod-bench/security

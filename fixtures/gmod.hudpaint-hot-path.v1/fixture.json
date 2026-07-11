@@ -1,0 +1,14 @@
+{
+  "id": "gmod.hudpaint-hot-path.v1",
+  "version": 1,
+  "title": "Allocation-conscious HUDPaint hook",
+  "prompt": "Write a client-side HUDPaint hook that draws a fixed material, color, and the local player's health. Treat HUDPaint as a per-frame hot path: create stable render resources once, read LocalPlayer once per invocation, exit if unusable, and reuse repeated per-frame values.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 0, "maxCandidateLoops": 0, "maxAnswerBytes": 4096 },
+  "oracle": {
+    "expectedPrimitive": "stable Material/Color outside HUDPaint and one per-frame LocalPlayer/value lookup",
+    "sourceUrls": ["https://wiki.facepunch.com/gmod/GM:HUDPaint", "https://wiki.facepunch.com/gmod/Global.LocalPlayer", "https://wiki.facepunch.com/gmod/Global.Material"],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "hot-hook" }
+}

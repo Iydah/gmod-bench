@@ -1,0 +1,27 @@
+{
+  "id": "gmod.file-data-root-confinement.v1",
+  "version": 1,
+  "title": "Confine a remote file read to one DATA directory",
+  "prompt": "In server-side Garry's Mod Lua, receive MyAddon.ReadUpload from a superadmin. Read one client-supplied filename of at most 64 characters from myaddon/uploads under the DATA search path. Permit only ASCII letters, digits, underscore, dot, and hyphen as one filename segment, reject invalid input, read at most 65536 bytes, close the handle, then call consume(data). Bound the net message and show the complete receiver.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 8192
+  },
+  "oracle": {
+    "expectedPrimitive": "server authorization plus one bounded allowlisted filename segment joined to a fixed DATA prefix and a bounded file handle read",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/net.Receive",
+      "https://wiki.facepunch.com/gmod/net.ReadString",
+      "https://wiki.facepunch.com/gmod/file.Open",
+      "https://wiki.facepunch.com/gmod/File_Search_Paths",
+      "https://wiki.facepunch.com/gmod/file_class"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "data-root-confinement" }
+}

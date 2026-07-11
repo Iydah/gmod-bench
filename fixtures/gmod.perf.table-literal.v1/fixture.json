@@ -1,0 +1,34 @@
+{
+  "id": "gmod.perf.table-literal.v1",
+  "version": 1,
+  "title": "Table literal init vs field assigns",
+  "prompt": "In Garry's Mod Lua, show the faster way to create a small table with known fields: assign fields after {}, or put them in the table constructor.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "local t = { key = value, ... }",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/table_assignments.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "\\{\\s*\\w+\\s*=",
+      "\\{\\s*\\[\\s*[\"']"
+    ],
+    "partialPatterns": [
+      "local\\s+\\w+\\s*=\\s*\\{\\s*\\}"
+    ],
+    "incorrectPatterns": []
+  }
+}

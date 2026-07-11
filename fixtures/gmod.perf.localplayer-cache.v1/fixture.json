@@ -1,0 +1,27 @@
+{
+  "id": "gmod.perf.localplayer-cache.v1",
+  "version": 1,
+  "title": "Cache LocalPlayer() result",
+  "prompt": "In Garry's Mod client Lua, you call LocalPlayer() very often. Show a faster pattern that avoids looking up LocalPlayer() from scratch every time.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "Cache LocalPlayer entity / fastLocalPlayer",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/localplayer_cache.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "3"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "localplayer-cache"
+  }
+}

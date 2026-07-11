@@ -1,0 +1,14 @@
+{
+  "id": "gmod.networkvar-entity-state.v1",
+  "version": 1,
+  "title": "Predicted networked entity state",
+  "prompt": "In a scripted Garry's Mod entity, define a frequently read predicted integer Power value using the preferred built-in entity state primitive. Show the definition only; updates occur only when Power changes.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 0, "maxCandidateLoops": 0, "maxAnswerBytes": 2048 },
+  "oracle": {
+    "expectedPrimitive": "ENT:SetupDataTables plus Entity:NetworkVar",
+    "sourceUrls": ["https://wiki.facepunch.com/gmod/Entity:NetworkVar", "https://wiki.facepunch.com/gmod/Networking_Entities"],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "networkvar-state" }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "gmod.perf.table-empty.v1",
+  "version": 1,
+  "title": "table.Empty vs assign empty table",
+  "prompt": "In Garry's Mod Lua, you need to discard the contents of a large sequential table often. Show the generally faster approach between table.Empty(t) and t = {}.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "t = {} assign empty table",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/table_empty_vs_new.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "=\\s*\\{\\s*\\}"
+    ],
+    "partialPatterns": [
+      "table\\.Empty"
+    ],
+    "incorrectPatterns": []
+  }
+}

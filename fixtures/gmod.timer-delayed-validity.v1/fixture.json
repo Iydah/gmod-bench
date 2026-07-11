@@ -1,0 +1,14 @@
+{
+  "id": "gmod.timer-delayed-validity.v1",
+  "version": 1,
+  "title": "Safe delayed entity action",
+  "prompt": "In Garry's Mod Lua, remove a captured entity one second later. The entity may be removed before the callback runs. Show the shortest correct one-shot implementation.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 0, "maxCandidateLoops": 0, "maxAnswerBytes": 2048 },
+  "oracle": {
+    "expectedPrimitive": "timer.Simple with IsValid inside the callback",
+    "sourceUrls": ["https://wiki.facepunch.com/gmod/timer.Simple", "https://wiki.facepunch.com/gmod/Global.IsValid"],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "delayed-validity" }
+}

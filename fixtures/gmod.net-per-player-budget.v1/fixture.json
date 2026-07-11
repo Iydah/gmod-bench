@@ -1,0 +1,26 @@
+{
+  "id": "gmod.net-per-player-budget.v1",
+  "version": 1,
+  "title": "Bound a net receiver with a per-player budget",
+  "prompt": "In server-side Garry's Mod Lua, receive MyAddon.Action at most 20 times per player per one-second fixed window. The message contains one entity. Reject messages over 64 bits or over budget before reading the entity, validate it, then call perform(ent). Pool the network string once and clean player budget state on disconnect. Show the complete receiver and cleanup hook.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 0,
+    "maxAnswerBytes": 8192
+  },
+  "oracle": {
+    "expectedPrimitive": "early message-size and sender-keyed fixed-window checks before net.ReadEntity with disconnect cleanup",
+    "sourceUrls": [
+      "https://wiki.facepunch.com/gmod/net.Receive",
+      "https://wiki.facepunch.com/gmod/Net_Library_Usage",
+      "https://wiki.facepunch.com/gmod/GM:PlayerDisconnected",
+      "https://wiki.facepunch.com/gmod/util.AddNetworkString"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "1"
+  },
+  "scoring": { "kind": "plugin", "plugin": "per-player-net-budget" }
+}

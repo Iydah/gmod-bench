@@ -1,0 +1,27 @@
+{
+  "id": "gmod.perf.find-players-near.v1",
+  "version": 1,
+  "title": "Find nearby players efficiently",
+  "prompt": "In Garry's Mod server Lua with many players online, you need every player within a radius of a position. Show a faster approach than ents.FindInSphere then filtering for players.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 2,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "Loop players + DistToSqr/Distance",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/finding_players.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "plugin",
+    "plugin": "find-players-near"
+  }
+}

@@ -1,0 +1,964 @@
+---
+import PassRateChip from "./PassRateChip.astro";
+import Icon from "./Icon.astro";
+import "../styles/leaderboard-table.css";
+import "../styles/leaderboard-controls.css";
+import {
+  adapterLabel,
+  displayModel,
+  formatMs,
+  formatScoreInterval,
+  rateBarWidth,
+  sharePct,
+  shouldShowPassAtK,
+  thinkingLabel,
+  thinkingOf,
+  THINKING_ORDER,
+  type LeaderboardRow,
+} from "../lib/leaderboard-view";
+import { fixtureResultsFor, fixtureStatusLabel } from "../lib/fixture-index";
+
+export type { LeaderboardRow } from "../lib/leaderboard-view";
+
+/**
+ * Shared leaderboard board (filters + full columns).
+ * Used by /leaderboard, home, and run detail — same component, same styles.
+ */
+interface Props {
+  models: LeaderboardRow[];
+  /** @deprecated Prefer default full board. Compact trims columns. */
+  compact?: boolean;
+  /** Defaults to true for the full board (same as /leaderboard). */
+  interactive?: boolean;
+  /** Hide the small run id under each model (e.g. already on a run page). */
+  hideRunLink?: boolean;
+}
+
+const {
+  models,
+  compact = false,
+  interactive = !compact,
+  hideRunLink = false,
+} = Astro.props;
+
+const adapters = [...new Set(models.map((m) => m.adapterId).filter(Boolean))];
+const thinkingLevels = [
+  ...new Set(models.map((m) => thinkingOf(m)).filter(Boolean) as string[]),
+].sort((a, b) => (THINKING_ORDER[a] ?? 99) - (THINKING_ORDER[b] ?? 99));
+
+const tableId = compact ? "lb-compact" : "lb-full";
+const showPassAtK = !compact && shouldShowPassAtK(models);
+const colCount = compact ? 7 : showPassAtK ? 10 : 9;
+
+const enriched = models.map((m, index) => {
+  const thinking = thinkingOf(m);
+  const other = m.otherErrors ?? 0;
+  const accounted = m.pass + m.partial + m.incorrect + m.protocol_error + other;
+  const residual = Math.max(0, m.attempts - accounted);
+  const fixturePass =
+    m.fixturesPassed != null && m.fixturesAttempted
+      ? m.fixturesPassed / m.fixturesAttempted
+      : null;
+  const fixtures = fixtureResultsFor(m.runId, m.adapterId, m.model);
+  const fixturesPassedChip = fixtures.filter(
+    (f) => f.status === "pass" || (f.pass > 0 && f.status === "mixed"),
+  ).length;
+  // Prefer attempt-level solve count when present
+  const fixturesSolved =
+    m.fixturesPassed ?? fixtures.filter((f) => f.pass > 0).length;
+  const fixturesTotal = m.fixturesAttempted ?? (fixtures.length || null);
+  return {
+    ...m,
+    rowKey: `${m.runId ?? "norun"}-${m.adapterId}-${index}`
+      .replace(/[^a-zA-Z0-9_-]/g, "-")
+      .replace(/-+/g, "-"),
+    displayName: displayModel(m),
+    thinking,
+    thinkingLabel: thinkingLabel(thinking),
+    thinkingSort: thinking ? (THINKING_ORDER[thinking] ?? 50) : -1,
+    scoreIntervalLabel: formatScoreInterval(
+      m.scoreIntervalLow,
+      m.scoreIntervalHigh,
+    ),
+    other,
+    residual,
+    fixturePass,
+    fixturePassLabel:
+      fixturesTotal != null ? `${fixturesSolved}/${fixturesTotal}` : null,
+    fixtures,
+    fixturesPassedChip,
+    outcomeShares: {
+      pass: sharePct(m.pass, m.attempts),
+      partial: sharePct(m.partial, m.attempts),
+      wrong: sharePct(m.incorrect, m.attempts),
+      format: sharePct(m.protocol_error, m.attempts),
+      other: sharePct(other, m.attempts),
+      residual: sharePct(residual, m.attempts),
+    },
+    bars: {
+      pass: rateBarWidth(m.passRate),
+      cover: rateBarWidth(m.coverage),
+      score: rateBarWidth(m.fixtureScore),
+      passAtK: rateBarWidth(m.passAtKRate),
+      fixtures: rateBarWidth(
+        fixturePass ?? (fixturesTotal ? fixturesSolved / fixturesTotal : null),
+      ),
+    },
+  };
+});
+---
+
+{
+  interactive && (
+    <div class="table-toolbar">
+      <label class="table-search">
+        <Icon name="magnifying-glass" size={15} />
+        <span class="sr-only">Search models</span>
+        <input
+          type="search"
+          class="table-search__input"
+          placeholder="Search models…"
+          data-lb-search
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </label>
+
+      <div class="table-filters">
+        <div class="lb-menu" data-lb-adapter data-value="all">
+          <button
+            type="button"
+            class="lb-menu__trigger"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span class="lb-menu__kicker">Adapter</span>
+            <span class="lb-menu__sep" aria-hidden="true" />
+            <span class="lb-menu__value" data-lb-menu-value>
+              All
+            </span>
+            <Icon name="caret-down" size={11} class="lb-menu__caret" />
+          </button>
+          <div class="lb-menu__panel" role="listbox" hidden>
+            <button
+              type="button"
+              class="lb-menu__option"
+              role="option"
+              data-value="all"
+              aria-selected="true"
+            >
+              <Icon name="check" size={12} class="lb-menu__check" />
+              <span>All adapters</span>
+            </button>
+            {adapters.map((id) => (
+              <button
+                type="button"
+                class="lb-menu__option"
+                role="option"
+                data-value={id}
+                aria-selected="false"
+              >
+                <Icon name="check" size={12} class="lb-menu__check" />
+                <span>{adapterLabel(id)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {thinkingLevels.length > 0 && (
+          <div class="lb-menu" data-lb-thinking data-value="all">
+            <button
+              type="button"
+              class="lb-menu__trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              <span class="lb-menu__kicker">Think</span>
+              <span class="lb-menu__sep" aria-hidden="true" />
+              <span class="lb-menu__value" data-lb-menu-value>
+                Any
+              </span>
+              <Icon name="caret-down" size={11} class="lb-menu__caret" />
+            </button>
+            <div class="lb-menu__panel" role="listbox" hidden>
+              <button
+                type="button"
+                class="lb-menu__option"
+                role="option"
+                data-value="all"
+                aria-selected="true"
+              >
+                <Icon name="check" size={12} class="lb-menu__check" />
+                <span>Any</span>
+              </button>
+              {thinkingLevels.map((level) => (
+                <button
+                  type="button"
+                  class="lb-menu__option"
+                  role="option"
+                  data-value={level}
+                  aria-selected="false"
+                >
+                  <Icon name="check" size={12} class="lb-menu__check" />
+                  <span>{thinkingLabel(level)}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <button type="button" class="table-clear" data-lb-clear hidden>
+        <Icon name="x" size={14} />
+        Clear
+      </button>
+    </div>
+  )
+}
+
+<div class="table-wrap" role="region" aria-label="Leaderboard" tabindex="0">
+  <table
+    class:list={["table", compact && "table--compact"]}
+    id={tableId}
+    data-interactive={interactive ? "true" : undefined}
+    data-expandable="true"
+  >
+    <colgroup>
+      <col class="col-rank" />
+      <col class="col-adapter" />
+      <col class="col-model" />
+      <col class="col-think" />
+      <col class="col-pass" />
+      <col class="col-cover" />
+      {
+        compact ? (
+          <col class="col-scored" />
+        ) : (
+          <>
+            {showPassAtK && <col class="col-passk" />}
+            <col class="col-quality" />
+            <col class="col-outcomes" />
+            <col class="col-time" />
+          </>
+        )
+      }
+    </colgroup>
+    <thead>
+      <tr>
+        <th
+          scope="col"
+          data-sort="rank"
+          data-type="number"
+          aria-sort="ascending"
+        >
+          <span
+            class="tip tip--below th-label"
+            data-tip="Rank from cumulative verified score across compatible runs."
+            >#</span
+          >
+        </th>
+        <th scope="col" data-sort="adapter" data-type="string">
+          <span
+            class="tip tip--below th-label"
+            data-tip="How the model was run: Codex CLI, AntiGravity, OpenCode, OpenRouter, etc."
+            >Adapter</span
+          >
+        </th>
+        <th scope="col" data-sort="model" data-type="string">
+          <span
+            class="tip tip--below th-label"
+            data-tip="Model name without thinking suffix.">Model</span
+          >
+        </th>
+        <th scope="col" data-sort="thinking" data-type="number">
+          <span
+            class="tip tip--below th-label"
+            data-tip="Reasoning effort (Low, Medium, High, Extra High, Max, Ultra). Dash = none."
+            >Think</span
+          >
+        </th>
+        <th scope="col" data-sort="passRate" data-type="number">
+          <span
+            class="tip tip--below tip--wide th-label"
+            data-tip="pass ÷ scored. Only counts semantically graded answers. Invalid output is tracked separately."
+            >Pass %</span
+          >
+        </th>
+        <th scope="col" data-sort="coverage" data-type="number">
+          <span
+            class="tip tip--below tip--wide th-label"
+            data-tip="Evidence-bearing attempts ÷ scheduled attempts. Harness/transport failures are excluded; malformed returned answers still count as evidence."
+            >Cover %</span
+          >
+        </th>
+        {
+          !compact && (
+            <>
+              {showPassAtK && (
+                <th scope="col" data-sort="passAtK" data-type="number">
+                  <span
+                    class="tip tip--below tip--wide th-label"
+                    data-tip="Fixture solved on any of K repeated attempts."
+                  >
+                    pass@k
+                  </span>
+                </th>
+              )}
+              <th scope="col" data-sort="score" data-type="number">
+                <span
+                  class="tip tip--below tip--wide th-label"
+                  data-tip="Cumulative verified score across compatible runs (shown as %). Fixtures are equally weighted; harness failures are excluded and malformed model answers score zero."
+                >
+                  Score
+                </span>
+              </th>
+              <th scope="col" data-sort="pass" data-type="number">
+                <span
+                  class="tip tip--below tip--wide th-label"
+                  data-tip="pass / partial / wrong / invalid output. Invalid output means the model answered but broke the required lua fence + Reason line contract."
+                >
+                  Outcomes
+                </span>
+              </th>
+              <th scope="col" data-sort="avgMs" data-type="number">
+                <span
+                  class="tip tip--below th-label"
+                  data-tip="Average wall time per attempt for this model in the published run."
+                >
+                  Time
+                </span>
+              </th>
+            </>
+          )
+        }
+        {
+          compact && (
+            <th scope="col" data-sort="scored" data-type="number">
+              <span
+                class="tip tip--below tip--wide th-label"
+                data-tip="How many fixtures passed out of how many produced a scorable answer."
+              >
+                Pass / scored
+              </span>
+            </th>
+          )
+        }
+      </tr>
+    </thead>
+    <tbody>
+      {
+        enriched.map((m) => (
+          <>
+            <tr
+              class="lb-row"
+              data-lb-row
+              data-row-key={m.rowKey}
+              data-adapter={m.adapterId}
+              data-rank={m.rank ?? Number.MAX_SAFE_INTEGER}
+              data-model={m.displayName}
+              data-thinking={m.thinking ?? ""}
+              data-thinking-sort={m.thinkingSort}
+              data-pass-rate={m.passRate ?? ""}
+              data-coverage={m.coverage ?? ""}
+              data-pass-at-k={m.passAtKRate ?? ""}
+              data-fixture-score={m.fixtureScore ?? ""}
+              data-pass={m.pass}
+              data-partial={m.partial}
+              data-incorrect={m.incorrect}
+              data-format={m.protocol_error}
+              data-scored={m.scored}
+              data-avg-ms={m.avgDurationMs}
+              tabindex="0"
+              role="button"
+              aria-expanded="false"
+              aria-controls={`lb-detail-${m.rowKey}`}
+            >
+              <td class="rank num-cell">
+                {m.rank != null ? (
+                  m.rank
+                ) : (
+                  <span
+                    class="tip"
+                    data-tip={`Unranked: ${((m.fixtureCoverage ?? 0) * 100).toFixed(1)}% fixture coverage is below the 50% ranking threshold`}
+                  >
+                    —
+                  </span>
+                )}
+              </td>
+              <td class="adapter-cell">
+                <span
+                  class="tip"
+                  data-tip={
+                    m.adapterId === "agy"
+                      ? "AntiGravity"
+                      : m.adapterId === "openrouter"
+                        ? "OpenRouter API"
+                        : m.adapterId === "opencode"
+                          ? "OpenCode CLI"
+                          : m.adapterId === "codex"
+                            ? "OpenAI Codex CLI"
+                            : adapterLabel(m.adapterId)
+                  }
+                >
+                  {adapterLabel(m.adapterId)}
+                </span>
+              </td>
+              <td class="model-cell">
+                <div class="model-stack">
+                  <div class="model-name-row">
+                    <span class="model-name" title={m.displayName}>
+                      {m.displayName}
+                    </span>
+                    {m.repeat && m.repeat > 1 ? (
+                      <span
+                        class="repeat-badge tip"
+                        data-tip={`Tried ${m.repeat} times per fixture (repeat×${m.repeat})`}
+                      >
+                        ×{m.repeat}
+                      </span>
+                    ) : null}
+                  </div>
+                  {m.runId && !hideRunLink ? (
+                    <a
+                      class="run-link"
+                      href={`/runs/${m.runId}`}
+                      title={`Open run ${m.runId}`}
+                      data-lb-no-toggle
+                    >
+                      {m.runId.slice(0, 8)}
+                    </a>
+                  ) : null}
+                </div>
+              </td>
+              <td class="thinking-cell">
+                {m.thinking ? (
+                  <span
+                    class={`think-badge think-badge--${m.thinking} tip`}
+                    data-tip={`Reasoning: ${m.thinkingLabel}`}
+                  >
+                    {m.thinkingLabel}
+                  </span>
+                ) : (
+                  <span
+                    class="think-badge think-badge--none tip"
+                    data-tip="No thinking / reasoning effort reported"
+                  >
+                    —
+                  </span>
+                )}
+              </td>
+              <td class="num-cell">
+                <span
+                  class="tip tip--wide"
+                  data-tip={`${m.pass} passed out of ${m.scored} scored attempts (${m.passRateLabel ?? "—"})`}
+                >
+                  <PassRateChip rate={m.passRate} label={m.passRateLabel} />
+                </span>
+              </td>
+              <td class="num-cell">
+                <span
+                  class="tip tip--wide"
+                  data-tip={`${m.evidenceAttempts ?? m.scored} evidence-bearing / ${m.scheduledAttempts ?? m.attempts} scheduled attempts · ${m.harnessFailures ?? 0} harness failures excluded`}
+                >
+                  {m.coverageLabel ?? "—"}
+                </span>
+              </td>
+              {compact ? (
+                <td class="num-cell">
+                  <span
+                    class="tip"
+                    data-tip={`${m.pass} passed · ${m.scored} scored`}
+                  >
+                    {m.pass}/{m.scored}
+                  </span>
+                </td>
+              ) : (
+                <>
+                  {showPassAtK && (
+                    <td class="num-cell">
+                      <span
+                        class="tip tip--wide"
+                        data-tip={`Solved on any of ${m.repeat ?? "K"} attempts: ${m.passAtKLabel}`}
+                      >
+                        {m.passAtKLabel ?? "—"}
+                      </span>
+                    </td>
+                  )}
+                  <td class="num-cell">
+                    <span
+                      class="tip tip--wide"
+                      data-tip={`Verified score ${m.fixtureScoreLabel ?? "—"} · 95% interval ${m.scoreIntervalLabel} · ${m.verifiedRunCount ?? 1} run(s)`}
+                    >
+                      {m.fixtureScoreLabel ?? "—"}
+                    </span>
+                  </td>
+                  <td class="num-cell outcomes">
+                    <span
+                      class="tip tip--wide"
+                      data-tip={`pass ${m.pass} · partial ${m.partial} · wrong ${m.incorrect} · invalid output ${m.protocol_error} · scored ${m.scored}/${m.attempts}`}
+                    >
+                      {m.pass}/{m.partial}/{m.incorrect}/{m.protocol_error}
+                    </span>
+                  </td>
+                  <td class="num-cell">
+                    <span
+                      class="tip"
+                      data-tip={`Average ${formatMs(m.avgDurationMs)} per attempt`}
+                    >
+                      {formatMs(m.avgDurationMs)}
+                    </span>
+                  </td>
+                </>
+              )}
+            </tr>
+            <tr
+              class="lb-detail"
+              data-lb-detail
+              data-row-key={m.rowKey}
+              id={`lb-detail-${m.rowKey}`}
+              hidden
+            >
+              <td colspan={colCount}>
+                <div class="lb-detail__inner">
+                  <header class="lb-detail__head">
+                    <div class="lb-detail__identity">
+                      <div class="lb-detail__title-row">
+                        <span class="lb-detail__rank">
+                          {m.rank != null ? `#${m.rank}` : "Unranked"}
+                        </span>
+                        <h3 class="lb-detail__title">{m.displayName}</h3>
+                        {m.thinking ? (
+                          <span
+                            class={`think-badge think-badge--${m.thinking}`}
+                          >
+                            {m.thinkingLabel}
+                          </span>
+                        ) : null}
+                        {m.repeat && m.repeat > 1 ? (
+                          <span class="repeat-badge">×{m.repeat}</span>
+                        ) : null}
+                      </div>
+                      <p class="lb-detail__meta">
+                        <span>{adapterLabel(m.adapterId)}</span>
+                        {m.suite ? (
+                          <>
+                            <span class="lb-detail__dot" aria-hidden="true">
+                              ·
+                            </span>
+                            <span class="lb-detail__mono">{m.suite}</span>
+                          </>
+                        ) : null}
+                        {m.runId && !hideRunLink ? (
+                          <>
+                            <span class="lb-detail__dot" aria-hidden="true">
+                              ·
+                            </span>
+                            <a
+                              class="lb-detail__run"
+                              href={`/runs/${m.runId}`}
+                              data-lb-no-toggle
+                            >
+                              Run {m.runId.slice(0, 8)}
+                            </a>
+                          </>
+                        ) : null}
+                      </p>
+                    </div>
+                    {m.runId && !hideRunLink ? (
+                      <a
+                        class="lb-detail__cta"
+                        href={`/runs/${m.runId}`}
+                        data-lb-no-toggle
+                      >
+                        Open run
+                        <Icon name="arrow-up-right" size={13} />
+                      </a>
+                    ) : null}
+                  </header>
+
+                  <div class="lb-detail__metrics">
+                    <div class="lb-metric">
+                      <div class="lb-metric__top">
+                        <span class="lb-metric__label">Pass rate</span>
+                        <span class="lb-metric__value lb-metric__value--pass">
+                          {m.passRateLabel ?? "—"}
+                        </span>
+                      </div>
+                      <div
+                        class="lb-metric__track"
+                        role="presentation"
+                        aria-hidden="true"
+                      >
+                        <span
+                          class="lb-metric__fill lb-metric__fill--pass"
+                          style={`width:${m.bars.pass}%`}
+                        />
+                      </div>
+                      <p class="lb-metric__sub">
+                        {m.pass} pass · {m.scored} scored
+                      </p>
+                    </div>
+
+                    <div class="lb-metric">
+                      <div class="lb-metric__top">
+                        <span class="lb-metric__label">Coverage</span>
+                        <span class="lb-metric__value">
+                          {m.coverageLabel ?? "—"}
+                        </span>
+                      </div>
+                      <div
+                        class="lb-metric__track"
+                        role="presentation"
+                        aria-hidden="true"
+                      >
+                        <span
+                          class="lb-metric__fill lb-metric__fill--cover"
+                          style={`width:${m.bars.cover}%`}
+                        />
+                      </div>
+                      <p class="lb-metric__sub">
+                        {m.evidenceAttempts ?? m.scored} /{" "}
+                        {m.scheduledAttempts ?? m.attempts} evidence-bearing
+                      </p>
+                    </div>
+
+                    <div class="lb-metric">
+                      <div class="lb-metric__top">
+                        <span class="lb-metric__label">Verified score</span>
+                        <span class="lb-metric__value">
+                          {m.fixtureScoreLabel ?? "—"}
+                        </span>
+                      </div>
+                      <div
+                        class="lb-metric__track"
+                        role="presentation"
+                        aria-hidden="true"
+                      >
+                        <span
+                          class="lb-metric__fill lb-metric__fill--quality"
+                          style={`width:${m.bars.score}%`}
+                        />
+                      </div>
+                      <p class="lb-metric__sub">
+                        95% interval {m.scoreIntervalLabel} ·{" "}
+                        {m.verifiedRunCount ?? 1} run(s)
+                      </p>
+                    </div>
+
+                    <div class="lb-metric">
+                      <div class="lb-metric__top">
+                        <span class="lb-metric__label">
+                          {m.passAtKRate != null
+                            ? `pass@${m.repeat ?? "k"}`
+                            : "Fixtures"}
+                        </span>
+                        <span class="lb-metric__value">
+                          {m.passAtKRate != null
+                            ? (m.passAtKLabel ?? "—")
+                            : (m.fixturePassLabel ?? "—")}
+                        </span>
+                      </div>
+                      <div
+                        class="lb-metric__track"
+                        role="presentation"
+                        aria-hidden="true"
+                      >
+                        <span
+                          class="lb-metric__fill lb-metric__fill--k"
+                          style={`width:${m.passAtKRate != null ? m.bars.passAtK : m.bars.fixtures}%`}
+                        />
+                      </div>
+                      <p class="lb-metric__sub">
+                        {m.passAtKRate != null
+                          ? m.fixturePassLabel
+                            ? `${m.fixturePassLabel} fixtures ever solved`
+                            : `any of ${m.repeat ?? "K"} tries`
+                          : m.fixturePassLabel
+                            ? "fixtures passed / attempted"
+                            : "single-shot run"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="lb-detail__grid">
+                    <section class="lb-panel">
+                      <h4 class="lb-panel__title">Outcome mix</h4>
+                      <div
+                        class="lb-outcome-bar"
+                        role="img"
+                        aria-label={`Outcomes: ${m.pass} pass, ${m.partial} partial, ${m.incorrect} wrong, ${m.protocol_error} invalid output${m.other ? `, ${m.other} other` : ""}`}
+                      >
+                        {m.pass > 0 && (
+                          <span
+                            class="lb-outcome-bar__seg lb-outcome-bar__seg--pass"
+                            style={`width:${m.outcomeShares.pass}`}
+                          />
+                        )}
+                        {m.partial > 0 && (
+                          <span
+                            class="lb-outcome-bar__seg lb-outcome-bar__seg--partial"
+                            style={`width:${m.outcomeShares.partial}`}
+                          />
+                        )}
+                        {m.incorrect > 0 && (
+                          <span
+                            class="lb-outcome-bar__seg lb-outcome-bar__seg--wrong"
+                            style={`width:${m.outcomeShares.wrong}`}
+                          />
+                        )}
+                        {m.protocol_error > 0 && (
+                          <span
+                            class="lb-outcome-bar__seg lb-outcome-bar__seg--format"
+                            style={`width:${m.outcomeShares.format}`}
+                          />
+                        )}
+                        {m.other > 0 && (
+                          <span
+                            class="lb-outcome-bar__seg lb-outcome-bar__seg--other"
+                            style={`width:${m.outcomeShares.other}`}
+                          />
+                        )}
+                        {m.residual > 0 && (
+                          <span
+                            class="lb-outcome-bar__seg lb-outcome-bar__seg--residual"
+                            style={`width:${m.outcomeShares.residual}`}
+                          />
+                        )}
+                      </div>
+                      <ul class="lb-outcome-legend">
+                        <li>
+                          <span
+                            class="lb-swatch lb-swatch--pass"
+                            aria-hidden="true"
+                          />
+                          <span class="lb-outcome-legend__k">Pass</span>
+                          <span class="lb-outcome-legend__v">{m.pass}</span>
+                        </li>
+                        <li>
+                          <span
+                            class="lb-swatch lb-swatch--partial"
+                            aria-hidden="true"
+                          />
+                          <span class="lb-outcome-legend__k">Partial</span>
+                          <span class="lb-outcome-legend__v">{m.partial}</span>
+                        </li>
+                        <li>
+                          <span
+                            class="lb-swatch lb-swatch--wrong"
+                            aria-hidden="true"
+                          />
+                          <span class="lb-outcome-legend__k">Wrong</span>
+                          <span class="lb-outcome-legend__v">
+                            {m.incorrect}
+                          </span>
+                        </li>
+                        <li>
+                          <span
+                            class="lb-swatch lb-swatch--format"
+                            aria-hidden="true"
+                          />
+                          <span class="lb-outcome-legend__k">
+                            Invalid output
+                          </span>
+                          <span class="lb-outcome-legend__v">
+                            {m.protocol_error}
+                          </span>
+                        </li>
+                        {m.other > 0 && (
+                          <li>
+                            <span
+                              class="lb-swatch lb-swatch--other"
+                              aria-hidden="true"
+                            />
+                            <span class="lb-outcome-legend__k">Harness</span>
+                            <span class="lb-outcome-legend__v">{m.other}</span>
+                          </li>
+                        )}
+                      </ul>
+                      <p class="lb-panel__note">
+                        Invalid output means the model returned content that
+                        broke the answer contract, so it scores zero. Harness
+                        failures returned no answer and are excluded from score.
+                      </p>
+                    </section>
+
+                    <section class="lb-panel">
+                      <h4 class="lb-panel__title">Attempt funnel</h4>
+                      <ol class="lb-funnel">
+                        <li class="lb-funnel__step">
+                          <div class="lb-funnel__row">
+                            <span class="lb-funnel__l">Attempts</span>
+                            <span class="lb-funnel__n">{m.attempts}</span>
+                          </div>
+                          <span class="lb-funnel__bar" aria-hidden="true">
+                            <span class="lb-funnel__fill" style="width:100%" />
+                          </span>
+                        </li>
+                        <li class="lb-funnel__step">
+                          <div class="lb-funnel__row">
+                            <span class="lb-funnel__l">Scored</span>
+                            <span class="lb-funnel__n">{m.scored}</span>
+                          </div>
+                          <span class="lb-funnel__bar" aria-hidden="true">
+                            <span
+                              class="lb-funnel__fill lb-funnel__fill--mid"
+                              style={`width:${sharePct(m.scored, m.attempts)}`}
+                            />
+                          </span>
+                        </li>
+                        <li class="lb-funnel__step">
+                          <div class="lb-funnel__row">
+                            <span class="lb-funnel__l">Passed</span>
+                            <span class="lb-funnel__n">{m.pass}</span>
+                          </div>
+                          <span class="lb-funnel__bar" aria-hidden="true">
+                            <span
+                              class="lb-funnel__fill lb-funnel__fill--ok"
+                              style={`width:${sharePct(m.pass, m.attempts)}`}
+                            />
+                          </span>
+                        </li>
+                        {m.fixturePassLabel && (
+                          <li class="lb-funnel__step">
+                            <div class="lb-funnel__row">
+                              <span class="lb-funnel__l">Fixtures solved</span>
+                              <span class="lb-funnel__n">
+                                {m.fixturePassLabel}
+                              </span>
+                            </div>
+                            <span class="lb-funnel__bar" aria-hidden="true">
+                              <span
+                                class="lb-funnel__fill lb-funnel__fill--accent"
+                                style={`width:${m.bars.fixtures}%`}
+                              />
+                            </span>
+                          </li>
+                        )}
+                      </ol>
+                    </section>
+
+                    <section class="lb-panel lb-panel--facts">
+                      <h4 class="lb-panel__title">Run facts</h4>
+                      <dl class="lb-facts">
+                        <div class="lb-facts__row">
+                          <dt>Avg time</dt>
+                          <dd>{formatMs(m.avgDurationMs)}</dd>
+                        </div>
+                        <div class="lb-facts__row">
+                          <dt>Repeat</dt>
+                          <dd>
+                            {m.repeat && m.repeat > 1
+                              ? `×${m.repeat} per fixture`
+                              : "Single-shot"}
+                          </dd>
+                        </div>
+                        <div class="lb-facts__row">
+                          <dt>Evidence share</dt>
+                          <dd>
+                            {m.evidenceAttempts ?? m.scored}/
+                            {m.scheduledAttempts ?? m.attempts}
+                            {m.coverageLabel ? ` (${m.coverageLabel})` : ""}
+                          </dd>
+                        </div>
+                        <div class="lb-facts__row">
+                          <dt>Verified runs</dt>
+                          <dd>{m.verifiedRunCount ?? 1}</dd>
+                        </div>
+                        <div class="lb-facts__row">
+                          <dt>95% interval</dt>
+                          <dd>{m.scoreIntervalLabel}</dd>
+                        </div>
+                        {m.suite && (
+                          <div class="lb-facts__row">
+                            <dt>Suite</dt>
+                            <dd class="lb-facts__mono">{m.suite}</dd>
+                          </div>
+                        )}
+                        {m.label && (
+                          <div class="lb-facts__row">
+                            <dt>Raw label</dt>
+                            <dd class="lb-facts__mono" title={m.label}>
+                              {m.label}
+                            </dd>
+                          </div>
+                        )}
+                        {m.runId && (
+                          <div class="lb-facts__row">
+                            <dt>Run id</dt>
+                            <dd class="lb-facts__mono">
+                              <a href={`/runs/${m.runId}`} data-lb-no-toggle>
+                                {m.runId}
+                              </a>
+                            </dd>
+                          </div>
+                        )}
+                      </dl>
+                    </section>
+                  </div>
+
+                  <section
+                    class="lb-fixtures"
+                    aria-label="Latest run fixture results"
+                  >
+                    <div class="lb-fixtures__head">
+                      <h4 class="lb-fixtures__title">Latest run fixtures</h4>
+                      {m.fixtures.length > 0 ? (
+                        <span class="lb-fixtures__tally">
+                          {m.fixtures.filter((f) => f.pass > 0).length}/
+                          {m.fixtures.length} passed in linked run
+                          {m.fixtures.some((f) => f.attempts > 1)
+                            ? " · fails first"
+                            : ""}
+                        </span>
+                      ) : null}
+                    </div>
+                    {m.fixtures.length > 0 ? (
+                      <div class="lb-fixtures__grid">
+                        {m.fixtures.map((fx) => (
+                          <span
+                            class={`lb-fx lb-fx--${fx.status} tip tip--wide`}
+                            data-tip={`${fx.fixtureId} — ${fixtureStatusLabel(fx.status)}: ${fx.summary}`}
+                            title={`${fx.fixtureId}: ${fx.summary}`}
+                          >
+                            <span class="lb-fx__dot" aria-hidden="true" />
+                            <span class="lb-fx__name">{fx.name}</span>
+                            {fx.attempts > 1 ? (
+                              <span class="lb-fx__count">
+                                {fx.pass}/{fx.attempts}
+                              </span>
+                            ) : null}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p class="lb-fixtures__empty">
+                        {m.runId
+                          ? "No per-fixture attempts published for this row."
+                          : "Open a published run to inspect individual fixtures."}
+                      </p>
+                    )}
+                  </section>
+                </div>
+              </td>
+            </tr>
+          </>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+{
+  !compact && (
+    <p class="table-legend">
+      Verified score aggregates compatible runs. Outcomes = pass / partial /
+      wrong / invalid output; harness failures are excluded. Click a row for
+      evidence and the linked run's fixtures.
+    </p>
+  )
+}
+<script>
+  import { initLeaderboard } from "../scripts/leaderboard";
+  initLeaderboard(document);
+  document.addEventListener("astro:page-load", () => initLeaderboard(document));
+</script>

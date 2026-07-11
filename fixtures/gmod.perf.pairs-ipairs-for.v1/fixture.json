@@ -1,0 +1,33 @@
+{
+  "id": "gmod.perf.pairs-ipairs-for.v1",
+  "version": 1,
+  "title": "pairs vs ipairs vs numeric for on sequential tables",
+  "prompt": "In Garry's Mod Lua, you have a large sequential array-like table of numbers. Show the fastest typical way to loop it among pairs, ipairs, and numeric for.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "responseContract": {
+    "codeFenceLanguage": "lua",
+    "reasonPrefix": "Reason:",
+    "maxReasonLines": 1,
+    "minCandidateLoops": 1,
+    "maxCandidateLoops": 1,
+    "maxAnswerBytes": 2048
+  },
+  "oracle": {
+    "expectedPrimitive": "for i=1,#t (or ipairs) over pairs",
+    "sourceUrls": [
+      "https://github.com/OverlordAkise/gmod-lua-performance",
+      "https://github.com/OverlordAkise/gmod-lua-performance/blob/main/files/pairs_vs_ipairs_vs_for.lua"
+    ],
+    "verifiedAt": "2026-07-10",
+    "rubricVersion": "2"
+  },
+  "scoring": {
+    "kind": "regex",
+    "passPatterns": [
+      "for\\s+\\w+\\s*=\\s*1\\s*,\\s*#",
+      "local\\s+(\\w+)\\s*=\\s*#\\s*\\w+[\\s\\S]{0,160}for\\s+\\w+\\s*=\\s*1\\s*,\\s*\\1",
+      "ipairs\\s*\\("
+    ],
+    "partialPatterns": ["pairs\\s*\\("],
+    "incorrectPatterns": []
+  }
+}
