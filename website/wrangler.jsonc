@@ -3,6 +3,12 @@
   "name": "gmod-bench",
   "compatibility_date": "2026-07-10",
   "compatibility_flags": ["nodejs_compat"],
+  // Public site: gmodbench.com only (no workers.dev surface).
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "gmodbench.com", "custom_domain": true },
+  ],
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
