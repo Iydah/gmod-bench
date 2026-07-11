@@ -2,7 +2,7 @@
   "id": "gmod.perf.surface-text.v1",
   "version": 1,
   "title": "surface text vs draw.DrawText",
-  "prompt": "In Garry's Mod client Lua, you draw a single-line string every frame. Show a faster drawing approach among surface.* text helpers and draw.DrawText / SimpleTextOutlined.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod client Lua, you draw a single-line string every frame. It currently draws with draw.DrawText. Show a faster drawing approach for that hot path.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

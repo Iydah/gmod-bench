@@ -2,7 +2,7 @@
   "id": "gmod.perf.setdrawcolor-split.v1",
   "version": 1,
   "title": "surface.SetDrawColor RGB split vs Color object",
-  "prompt": "In Garry's Mod client Lua, surface.SetDrawColor can take a Color object or separate r,g,b numbers. Show the faster call style for a hot draw path.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod client Lua, a hot draw path calls surface.SetDrawColor with a Color object each time. Show the faster call style.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

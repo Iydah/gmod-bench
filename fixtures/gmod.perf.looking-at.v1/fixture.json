@@ -2,7 +2,7 @@
   "id": "gmod.perf.looking-at.v1",
   "version": 1,
   "title": "Are two players looking at each other",
-  "prompt": "In Garry's Mod Lua, you need a cheap check for whether two players are roughly looking at each other (aim directions face each other). Show a fast approach using aim vectors rather than angle-between calculations with math.acos.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, you need a cheap check for whether two players are roughly looking at each other (aim directions face each other). A naive check computes the angle between them with math.acos. Show a fast approach for this.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

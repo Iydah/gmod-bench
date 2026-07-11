@@ -2,7 +2,7 @@
   "id": "gmod.perf.find-ents-near.v1",
   "version": 1,
   "title": "Finding entities near a player",
-  "prompt": "In Garry's Mod server Lua, you need entities near a player for a cheap spatial query. Show one of the faster built-in FindIn* approaches from common benchmarks (not FindInPVS as the default pick).\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod server Lua, you need entities near a player for a cheap spatial query. Show a fast built-in spatial lookup for finding those nearby entities.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

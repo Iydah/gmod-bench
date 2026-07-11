@@ -2,7 +2,7 @@
   "id": "gmod.perf.angle-zero.v1",
   "version": 1,
   "title": "Reuse a read-only or mutable zero Angle",
-  "prompt": "In Garry's Mod Lua, you need a zero Angle often in a hot path. Show the faster approach compared to constructing a new Angle() every time. Treat shared constants as read-only; if the caller must mutate the Angle, reuse an owned Angle and reset it.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, you need a zero Angle often in a hot path. It currently builds a new Angle(0, 0, 0) on every iteration. Show a faster approach for getting a zero Angle in that hot path. If the caller must mutate the angle, make sure your approach stays correct under mutation rather than corrupting a value shared elsewhere.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

@@ -2,7 +2,7 @@
   "id": "gmod.hook-object-lifecycle.v1",
   "version": 1,
   "title": "Lifecycle-safe entity-owned hook",
-  "prompt": "In Garry's Mod Lua, register an entity's Think-style method on a custom MyAddon.Tick hook without leaving a permanent hook that retains a removed entity. Use the hook system's object lifecycle support or show equivalent explicit removal.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, register an entity's Think-style method on a custom MyAddon.Tick hook so the callback runs, without leaving a permanent hook that keeps a removed entity alive after it is gone.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 0, "maxCandidateLoops": 0, "maxAnswerBytes": 3072 },
   "oracle": {
     "expectedPrimitive": "entity/table hook identifier or paired hook.Remove",

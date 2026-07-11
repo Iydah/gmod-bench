@@ -2,7 +2,7 @@
   "id": "gmod.networkvar-entity-state.v1",
   "version": 1,
   "title": "Predicted networked entity state",
-  "prompt": "In a scripted Garry's Mod entity, define a frequently read predicted integer Power value using the preferred built-in entity state primitive. Show the definition only; updates occur only when Power changes.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In a scripted Garry's Mod entity, define a frequently read, network-synced integer Power value that is safe to read during prediction. A common approach uses SetNWInt/GetNWInt-style networked variables. Show the preferred built-in per-entity state system for a value read this often, defining it only; updates occur only when Power changes.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 0, "maxCandidateLoops": 0, "maxAnswerBytes": 2048 },
   "oracle": {
     "expectedPrimitive": "ENT:SetupDataTables plus Entity:NetworkVar",

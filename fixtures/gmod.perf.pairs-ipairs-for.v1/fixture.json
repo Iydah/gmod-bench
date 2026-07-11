@@ -2,7 +2,7 @@
   "id": "gmod.perf.pairs-ipairs-for.v1",
   "version": 1,
   "title": "pairs vs ipairs vs numeric for on sequential tables",
-  "prompt": "In Garry's Mod Lua, you have a large sequential array-like table of numbers. Show the fastest typical way to loop it among pairs, ipairs, and numeric for.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, you have a large sequential array-like table of numbers. It is currently iterated with pairs. Show the fastest typical way to loop it.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

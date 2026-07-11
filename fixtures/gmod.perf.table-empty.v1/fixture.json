@@ -2,7 +2,7 @@
   "id": "gmod.perf.table-empty.v1",
   "version": 1,
   "title": "table.Empty vs assign empty table",
-  "prompt": "In Garry's Mod Lua, you need to discard the contents of a large sequential table often. Show the generally faster approach between table.Empty(t) and t = {}.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, you need to discard the contents of a large sequential table often. It currently clears the table with table.Empty(t). Show the generally faster approach for discarding its contents.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

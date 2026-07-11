@@ -2,7 +2,7 @@
   "id": "gmod.perf.meta-vs-arg.v1",
   "version": 1,
   "title": "Metamethod call vs plain function argument",
-  "prompt": "In Garry's Mod Lua, is ply:SomeHelper() generally faster or slower than SomeHelper(ply) for a helper you control?\n\nReturn exactly one fenced lua code block showing the preferred call style, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, you call a helper you control on players in a hot path, currently as a method ply:SomeHelper(). Show the generally faster way to define and call it.\n\nReturn exactly one fenced lua code block showing the preferred call style, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

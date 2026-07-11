@@ -2,7 +2,7 @@
   "id": "gmod.perf.seq-tables.v1",
   "version": 1,
   "title": "Sequential number tables vs string-key tables",
-  "prompt": "In Garry's Mod Lua, you will frequently iterate a fixed collection of values. Show the faster table shape for iteration among string-keyed maps and sequential number-indexed arrays.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, you will frequently iterate a fixed collection of values. It is currently stored as a string-keyed map. Show a table shape that iterates faster.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

@@ -2,7 +2,7 @@
   "id": "gmod.perf.hook-once.v1",
   "version": 1,
   "title": "hook.Run once with all players vs per-player hook.Run",
-  "prompt": "In Garry's Mod Lua, you need to notify custom logic for every player each tick. Show the faster pattern: calling hook.Run once with all players, versus looping players and calling hook.Run per player.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, you need to notify custom logic for every player each tick. A naive version loops over the players and calls hook.Run once per player. Show a faster pattern that avoids that per-player hook overhead.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

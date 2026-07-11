@@ -2,7 +2,7 @@
   "id": "gmod.perf.ents-iterator.v1",
   "version": 1,
   "title": "ents.Iterator for all entities",
-  "prompt": "In Garry's Mod Lua, write a loop that visits every entity, preferring the wiki-recommended efficient iterator when appropriate.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, write a loop that visits every entity. A common approach first builds the full list with ents.GetAll(). Show the most efficient built-in way to iterate them.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

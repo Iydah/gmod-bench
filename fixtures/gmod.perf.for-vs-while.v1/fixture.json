@@ -2,7 +2,7 @@
   "id": "gmod.perf.for-vs-while.v1",
   "version": 1,
   "title": "for vs while loops",
-  "prompt": "In Garry's Mod Lua, you need a tight counting loop from 1 to n. Show the generally faster loop style between while and for.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, you need a tight counting loop from 1 to n. A version uses a while loop with a manual counter. Show the generally faster loop style for this.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": {
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",

@@ -2,7 +2,7 @@
   "id": "gmod.ents-iterator-readonly.v1",
   "version": 1,
   "title": "Read-only cached entity iterator",
-  "prompt": "In Garry's Mod Lua, process matching entities directly with ents.Iterator without modifying the cached table returned by the iterator. Call use(ent) for each entity where wanted(ent) is true.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In Garry's Mod Lua, a common approach first copies every entity with ents.GetAll(). Write a version that visits entities directly without building that copy, and does not modify the collection while iterating. Call use(ent) for each entity where wanted(ent) is true.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 1, "maxCandidateLoops": 1, "maxAnswerBytes": 2048 },
   "oracle": {
     "expectedPrimitive": "direct read-only ents.Iterator processing",

@@ -2,7 +2,7 @@
   "id": "gmod.spatial-maintained-set.v1",
   "version": 1,
   "title": "Repeated proximity checks over addon entities",
-  "prompt": "In server-side Garry's Mod Lua, every Think you must find addon-owned entities of class my_addon_ent within radius of target. Avoid scanning every map entity each tick: seed a keyed set for entities that already exist, maintain it as entities appear/disappear, then use squared distance in the hot loop. Show initialization, registration, cleanup, and the Think hook.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
+  "prompt": "In server-side Garry's Mod Lua, every Think you must find addon-owned entities of class my_addon_ent within radius of target. A naive version scans every entity on the map each tick. Design something that does not re-scan all map entities every tick, stays correct as these entities spawn and are removed, and keeps the per-tick distance test cheap. Show initialization, how the collection is kept up to date, cleanup, and the Think hook.\n\nReturn exactly one fenced lua code block, then exactly one line in the form Reason: <reason>. Do not use tools or external resources.",
   "responseContract": { "codeFenceLanguage": "lua", "reasonPrefix": "Reason:", "maxReasonLines": 1, "minCandidateLoops": 2, "maxCandidateLoops": 2, "maxAnswerBytes": 8192 },
   "oracle": {
     "expectedPrimitive": "cold ents.FindByClass seed, maintained entity set, and DistToSqr in the repeated hot loop",
