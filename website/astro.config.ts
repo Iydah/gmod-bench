@@ -37,10 +37,15 @@ export default defineConfig({
   },
   security: {
     csp: {
+      // Allow Cloudflare Web Analytics: the beacon script host and its
+      // reporting endpoint. Everything else stays same-origin only.
+      scriptDirective: {
+        resources: ["'self'", "https://static.cloudflareinsights.com"],
+      },
       directives: [
         "default-src 'self'",
         "base-uri 'self'",
-        "connect-src 'self'",
+        "connect-src 'self' https://cloudflareinsights.com",
         "font-src 'self'",
         "form-action 'self'",
         "frame-ancestors 'none'",
