@@ -8,66 +8,85 @@ function before(code: string, earlier: RegExp, later: RegExp): boolean {
   return earlierIndex >= 0 && laterIndex >= 0 && earlierIndex < laterIndex;
 }
 
+/**
+ * Score a bounded, sender-owned chunk receiver by concept. The prompt fixes the
+ * interface (transfers[ply], id/index/size, the 64/24000/1048576 limits), but a
+ * correct answer may write those limits as inline literals or named constants,
+ * and track received chunks as a set or a counter — all accepted here.
+ */
 export function scoreBoundedChunkTransfer(
   response: ValidatedResponse,
 ): ScoreResult {
   const code = stripLuaCommentsAndStrings(response.code);
   const readData = /net\.ReadData\s*\(/;
-  const sizeBound = /size\s*>\s*MAX_CHUNK_BYTES/;
-  const totalBound = /totalBytes\s*\+\s*size\s*>\s*MAX_TOTAL_BYTES/;
-  const remainingBound = /size\s*>\s*(?:bytesLeft|net\.BytesLeft\s*\(\s*\))/;
-  const messageBound =
-    /len\s*>\s*\(?\s*32\s*\+\s*16\s*\+\s*16\s*\+\s*MAX_CHUNK_BYTES\s*\*\s*8\s*\)?/;
   const pool = /util\.AddNetworkString\s*\(/;
   const receive = /net\.Receive\s*\(/;
-  const requirements = [
-    /MAX_CHUNKS\s*,\s*MAX_CHUNK_BYTES\s*,\s*MAX_TOTAL_BYTES\s*=\s*64\s*,\s*24000\s*,\s*1048576/,
-    pool,
-    receive,
-    messageBound,
-    /net\.ReadUInt\s*\(\s*32\s*\)/,
-    /net\.ReadUInt\s*\(\s*16\s*\)/,
-    /transfers\s*\[\s*ply\s*\]/,
-    /transfer\.id\s*~=\s*id/,
-    /index\s*<\s*1/,
-    /index\s*>\s*(?:MAX_CHUNKS|transfer\.totalChunks)/,
-    sizeBound,
-    /net\.BytesLeft\s*\(\s*\)/,
-    remainingBound,
-    /transfer\.received\s*\[\s*index\s*\]/,
-    totalBound,
-    readData,
-    /transfer\.received\s*\[\s*index\s*\]\s*=\s*true/,
-    /transfer\.chunks\s*\[\s*index\s*\]\s*=\s*data/,
-    /transfer\.totalBytes\s*=\s*transfer\.totalBytes\s*\+\s*size/,
-    /transfer\.lastActivity\s*=\s*CurTime\s*\(/,
-  ];
-  const matched = requirements.filter((pattern) => pattern.test(code)).length;
+
+  // Bounds accepted as a named constant OR the literal from the spec.
+  const sizeBound = /\bsize\s*>\s*(?:MAX_CHUNK_BYTES|24000)\b/;
+  const totalBound =
+    /\btotalBytes\s*\+\s*size\s*>\s*(?:MAX_TOTAL_BYTES|1048576)\b|\bsize\s*\+\s*[\w.]*totalBytes\s*>\s*(?:MAX_TOTAL_BYTES|1048576)\b/;
+  const remainingBound =
+    /\bsize\s*>\s*(?:[\w.]*bytesLeft|net\.BytesLeft\s*\(\s*\))/i;
+  const indexBound =
+    /\bindex\s*<\s*1\b|\bindex\s*<=\s*0\b/.test(code) &&
+    /\bindex\s*>\s*(?:MAX_CHUNKS|transfer\.totalChunks|64)\b/.test(code);
+
+  const concepts = {
+    pool: pool.test(code),
+    receiver: receive.test(code),
+    // The spec limits (64 chunks / 24000 bytes / 1048576 total) must appear —
+    // whether inline or as named-constant values — so a wrong cap is caught.
+    caps:
+      /\b64\b/.test(code) && /\b24000\b/.test(code) && /\b1048576\b/.test(code),
+    readsId: /net\.ReadUInt\s*\(\s*32\s*\)/.test(code),
+    readsIndexSize:
+      (code.match(/net\.ReadUInt\s*\(\s*16\s*\)/g) ?? []).length >= 2,
+    ownsTransfer:
+      /transfers\s*\[\s*ply\b/.test(code) &&
+      /transfer\.id\s*~=\s*id/.test(code),
+    indexBound,
+    sizeBound: sizeBound.test(code),
+    remainingBound: remainingBound.test(code),
+    dupGuard:
+      /transfer\.(?:received|chunks)\s*\[\s*index\s*\]\s*then\s+return/.test(
+        code,
+      ) || /if\s+transfer\.(?:received|chunks)\s*\[\s*index\s*\]/.test(code),
+    totalBound: totalBound.test(code),
+    readsData: readData.test(code),
+    storesChunk: /transfer\.chunks\s*\[\s*index\s*\]\s*=\s*data/.test(code),
+    tracksTotal:
+      /transfer\.totalBytes\s*=\s*[^\r\n]*(?:\+\s*size|size\s*\+)/.test(code),
+    lastActivity: /transfer\.lastActivity\s*=\s*CurTime\s*\(/.test(code),
+  };
+  const missing = Object.entries(concepts)
+    .filter(([, ok]) => !ok)
+    .map(([name]) => name);
+
   const boundsBeforeRead =
-    before(code, messageBound, /net\.ReadUInt\s*\(/) &&
     before(code, sizeBound, readData) &&
     before(code, remainingBound, readData) &&
     before(code, totalBound, readData);
   const pooledBeforeReceiver = before(code, pool, receive);
 
-  if (
-    matched === requirements.length &&
-    boundsBeforeRead &&
-    pooledBeforeReceiver
-  ) {
+  if (missing.length === 0 && boundsBeforeRead && pooledBeforeReceiver) {
     return {
       status: "pass",
       detail:
         "Authenticates transfer state and bounds indices, duplicates, chunk bytes, and aggregate bytes before storing.",
     };
   }
+  // Partial only when the receiver authenticates the transfer AND bounds the
+  // read somehow — an unbounded `chunks[i] = net.ReadData(size)` is incorrect.
   if (
-    matched >= Math.ceil(requirements.length / 2) &&
-    /net\.ReadData\s*\(\s*size\s*\)/.test(code)
+    concepts.receiver &&
+    concepts.readsData &&
+    concepts.ownsTransfer &&
+    (concepts.sizeBound || concepts.remainingBound || concepts.totalBound)
   ) {
     return {
       status: "partial",
-      detail: `Chunk receiver satisfies ${matched}/${requirements.length} state and size checks.`,
+      detail: `Chunk receiver is missing: ${missing.join(", ") || "correct ordering"}.`,
     };
   }
   return {
@@ -76,33 +95,57 @@ export function scoreBoundedChunkTransfer(
   };
 }
 
+/**
+ * Score two-peer transfer cleanup by concept — the timeout may be written as
+ * `now - lastActivity >= 30` or `lastActivity > 30`, and the peer may be a
+ * local or `transfer.peer`.
+ */
 export function scoreTransferCleanup(response: ValidatedResponse): ScoreResult {
   const code = stripLuaComments(response.code);
-  const requirements = [
-    /local\s+function\s+(?:cancel|cleanup)\w*\s*\(/i,
-    /hook\.Add\s*\(\s*["']PlayerDisconnected["']/,
-    /timer\.Create\s*\(\s*[^,]+\s*,\s*1\s*,\s*0\s*,/,
-    /CurTime\s*\(\s*\)/,
-    /lastActivity/,
-    /lastActivity\s*>\s*30/,
-    /for\s+\w+\s*,\s*\w+\s+in\s+pairs\s*\(/,
-    /IsValid\s*\(\s*transfer\.peer\s*\)/,
-    /notifyCancelled\s*\(\s*transfer\.peer\s*\)/,
-    /transfers\s*\[\s*transfer\.peer\s*\]\s*=\s*nil/,
-    /transfers\s*\[\s*ply\s*\]\s*=\s*nil/,
-  ];
-  const matched = requirements.filter((pattern) => pattern.test(code)).length;
-  if (matched === requirements.length) {
+  const timeout =
+    /lastActivity\s*(?:>|>=)\s*30\b/.test(code) ||
+    /(?:CurTime\s*\(\s*\)|now|currentTime)\s*-\s*[\w.]*lastActivity\s*(?:>|>=)\s*30\b/.test(
+      code,
+    ) ||
+    /[\w.]*lastActivity\s*\+\s*30\s*(?:<|<=)\s*(?:CurTime\s*\(\s*\)|now|currentTime)/.test(
+      code,
+    );
+  const concepts = {
+    cancelFn: /local\s+function\s+(?:cancel|cleanup|remove)\w*\s*\(/i.test(
+      code,
+    ),
+    disconnectHook: /hook\.Add\s*\(\s*["']PlayerDisconnected["']/.test(code),
+    timer: /timer\.Create\s*\(\s*[^,]+,\s*1\s*,\s*0\s*,/.test(code),
+    curTime: /CurTime\s*\(\s*\)/.test(code),
+    timeout,
+    iterates: /for\s+\w+\s*,\s*\w+\s+in\s+pairs\s*\(/.test(code),
+    validatesPeer: /IsValid\s*\(\s*(?:transfer\.peer|peer)\s*\)/.test(code),
+    notifiesPeer: /notifyCancelled\s*\(\s*(?:transfer\.peer|peer)\s*\)/.test(
+      code,
+    ),
+    removesPeer: /transfers\s*\[\s*(?:transfer\.peer|peer)\s*\]\s*=\s*nil/.test(
+      code,
+    ),
+    removesSelf: /transfers\s*\[\s*ply\s*\]\s*=\s*nil/.test(code),
+  };
+  const missing = Object.entries(concepts)
+    .filter(([, ok]) => !ok)
+    .map(([name]) => name);
+
+  if (missing.length === 0) {
     return {
       status: "pass",
       detail:
         "Centralizes two-peer cleanup and invokes it for disconnects and inactivity timeouts.",
     };
   }
-  if (/PlayerDisconnected/.test(code) && /\[\s*ply\s*\]\s*=\s*nil/.test(code)) {
+  if (
+    concepts.disconnectHook &&
+    /transfers\s*\[\s*\w+\s*\]\s*=\s*nil/.test(code)
+  ) {
     return {
       status: "partial",
-      detail: `Cleanup satisfies ${matched}/${requirements.length} disconnect and timeout requirements.`,
+      detail: `Cleanup is missing: ${missing.join(", ")}.`,
     };
   }
   return {

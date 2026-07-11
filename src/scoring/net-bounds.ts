@@ -119,52 +119,80 @@ export function scorePerPlayerNetBudget(
   response: ValidatedResponse,
 ): ScoreResult {
   const code = stripLuaCommentsAndStrings(response.code);
+  const structural = stripLuaComments(response.code);
   const firstRead = /net\.Read(?:Entity|String|Data|UInt|Int|Table|Type)\s*\(/;
-  const rateReject = /(?:count|tokens)\s*>=?\s*(?:LIMIT|20)\b\s*then\s+return/;
   const pool = /util\.AddNetworkString\s*\(/;
   const receive = /net\.Receive\s*\(/;
-  const requirements = [
-    pool,
-    receive,
-    /function\s*\(\s*len\s*,\s*\w+\s*\)/,
-    /\blen\s*>\s*64/,
-    /(?:budgets|states|limits|windows)\s*\[\s*ply\s*\]/,
-    /CurTime\s*\(\s*\)/,
-    /resetAt/,
-    /resetAt\s*=\s*now\s*\+\s*1/,
-    rateReject,
-    /(?:count|tokens)\s*=\s*(?:state\.)?(?:count|tokens)\s*\+\s*1|state\.(?:count|tokens)\s*=\s*state\.(?:count|tokens)\s*\+\s*1/,
-    /hook\.Add\s*\(/,
-    /(?:budgets|states|limits|windows)\s*\[\s*ply\s*\]\s*=\s*nil/,
-    /net\.ReadEntity\s*\(/,
-    /IsValid\s*\(/,
-    /perform\s*\(\s*\w+\s*\)/,
-  ];
-  const matched = countMatches(code, requirements);
+
+  // Reject over-budget before parsing — count/tokens/attempts vs a limit, on a
+  // table entry (states[ply].count) OR a per-player field (ply.Count).
+  // The spec limit is 20/window — require the literal 20 or a named constant,
+  // so a wrong cap like 200 fails.
+  const rateReject =
+    /\w*(?:count|tokens|attempts|requests)\w*\s*(?:>=|>)\s*(?:20\b|[A-Za-z_]{3,})\s*then\s+return/i;
+  // Per-player state, keyed however: states[ply], budgets[ply:SteamID64()],
+  // or fields on the player entity (ply.MyAddon_Count).
+  const perPlayerState =
+    /\w+\s*\[\s*ply\b/.test(code) ||
+    /\w+\s*\[\s*ply\s*:\s*SteamID/.test(code) ||
+    /\bply\.\w+/.test(code);
+  // A fixed time window: resetAt/nextReset, or floor(CurTime()) bucketing.
+  const window =
+    /CurTime\s*\(\s*\)/.test(code) &&
+    (/reset\w*/i.test(code) ||
+      /window/i.test(code) ||
+      /math\.floor\s*\(\s*CurTime/.test(code) ||
+      /CurTime\s*\(\s*\)\s*\+/.test(code));
+  const increment =
+    /\w*(?:count|tokens|attempts|requests)\w*\s*=\s*[^\r\n]*(?:count|tokens|attempts|requests)?\w*\s*\+\s*1/i.test(
+      code,
+    );
+  const cleanup =
+    /PlayerDisconnected/.test(structural) &&
+    (/\[\s*ply\b[^\]]*\]\s*=\s*nil/.test(code) ||
+      /\bply\.\w+\s*=\s*nil/.test(code));
+
+  const concepts = {
+    pool: pool.test(code),
+    receiver:
+      /function\s*\(\s*\w+\s*,\s*\w+\s*\)/.test(code) && receive.test(code),
+    lenBound: /\blen\s*(?:>|>=)\s*64/.test(code),
+    perPlayerState,
+    window,
+    rateReject: rateReject.test(code),
+    increment,
+    readsEntity: /net\.ReadEntity\s*\(/.test(code),
+    validates: /IsValid\s*\(/.test(code),
+    perform: /perform\s*\(\s*\w+\s*\)/.test(code),
+    cleanup,
+  };
   const rateBeforeRead = occursBefore(code, rateReject, firstRead);
   const pooledBeforeReceiver = occursBefore(code, pool, receive);
+  const missing = Object.entries(concepts)
+    .filter(([, ok]) => !ok)
+    .map(([name]) => name);
 
+  // A single shared counter is the real anti-pattern the fixture rejects.
   if (
-    matched === requirements.length &&
-    rateBeforeRead &&
-    pooledBeforeReceiver
+    /local\s+(?:count|requests|tokens)\s*=\s*0/.test(code) &&
+    !perPlayerState
   ) {
+    return {
+      status: "incorrect",
+      detail: "Uses one shared counter instead of a per-player abuse budget.",
+    };
+  }
+  if (missing.length === 0 && rateBeforeRead && pooledBeforeReceiver) {
     return {
       status: "pass",
       detail:
         "Applies a bounded per-player time window before parsing and cleans sender state.",
     };
   }
-  if (/local\s+(?:count|requests)\s*=\s*0/.test(code)) {
-    return {
-      status: "incorrect",
-      detail: "Uses one shared counter instead of a per-player abuse budget.",
-    };
-  }
-  if (/net\.Receive\s*\(/.test(code) && /CurTime\s*\(/.test(code)) {
+  if (receive.test(code) && concepts.perform && perPlayerState) {
     return {
       status: "partial",
-      detail: `Receiver satisfies ${matched}/${requirements.length} per-player budget checks.`,
+      detail: `Per-player receiver is missing: ${missing.join(", ") || "correct ordering"}.`,
     };
   }
   return {

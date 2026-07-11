@@ -230,12 +230,19 @@ end)`;
     ).toBe("incorrect");
   });
 
-  test("requires the declared maximum message size before reading fields", () => {
+  test("accepts BytesLeft overflow bounding without a separate message gate", () => {
+    // A correct answer may bound the read via net.BytesLeft() per chunk instead
+    // of an upfront message-size gate — both prevent the overflow.
     expect(
       scoreBoundedChunkTransfer(
-        response(pass.replace("32 + 16 + 16 + MAX_CHUNK_BYTES * 8", "64")),
+        response(
+          pass.replace(
+            "  if len > (32 + 16 + 16 + MAX_CHUNK_BYTES * 8) then return end\n",
+            "",
+          ),
+        ),
       ).status,
-    ).not.toBe("pass");
+    ).toBe("pass");
   });
 
   test("rejects a declared chunk larger than the remaining message", () => {

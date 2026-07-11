@@ -19,7 +19,16 @@ import {
   scoreNetworkVarState,
 } from "../src/scoring/net-efficiency";
 import { scoreNetSecurity } from "../src/scoring/net-security";
-import { scoreBoundedDecompression } from "../src/scoring/net-bounds";
+import {
+  scoreBoundedDecompression,
+  scorePerPlayerNetBudget,
+} from "../src/scoring/net-bounds";
+import {
+  scoreBoundedChunkTransfer,
+  scoreTransferCleanup,
+} from "../src/scoring/transfer-security";
+import { scorePreventiveSpawnLimit } from "../src/scoring/spawn-security";
+import { scoreDataRootConfinement } from "../src/scoring/file-security";
 import { scorePredictionEffect } from "../src/scoring/prediction";
 import { scoreRealmLoading } from "../src/scoring/realm-loading";
 import { scoreSpatialCache } from "../src/scoring/spatial-cache";
@@ -330,5 +339,124 @@ end)`;
     expect(scoreBoundedDecompression(response(geminiDecomp)).status).toBe(
       "pass",
     );
+  });
+});
+
+// Security scorers: correct answers that use real-world idiom variants the old
+// exact-match scorers wrongly failed. Each mirrors a verbatim published answer.
+describe("security scorers accept correct idiom variants", () => {
+  test("net-security: CPPI ownership + clamped value passes", () => {
+    const code = `net.Receive("MyAddon.SetPower", function(len, ply)
+  if not IsValid(ply) then return end
+  ply.NextSet = ply.NextSet or 0
+  if CurTime() < ply.NextSet then return end
+  ply.NextSet = CurTime() + 0.1
+  if not ply:IsAdmin() then return end
+  local ent = net.ReadEntity()
+  if not IsValid(ent) then return end
+  local owner = ent.CPPIGetOwner and ent:CPPIGetOwner() or ent:GetOwner()
+  if owner ~= ply then return end
+  local power = math.Clamp(net.ReadUInt(7), 0, 100)
+  if ent.SetPower then ent:SetPower(power) end
+end)`;
+    expect(scoreNetSecurity(response(code)).status).toBe("pass");
+  });
+
+  test("per-player-budget: player-field state + floor window passes", () => {
+    const code = `util.AddNetworkString("MyAddon.Action")
+net.Receive("MyAddon.Action", function(len, ply)
+  if len > 64 then return end
+  local w = math.floor(CurTime())
+  if ply.ActWindow ~= w then ply.ActWindow = w; ply.ActCount = 0 end
+  if ply.ActCount >= 20 then return end
+  ply.ActCount = ply.ActCount + 1
+  local ent = net.ReadEntity()
+  if IsValid(ent) then perform(ent) end
+end)
+hook.Add("PlayerDisconnected", "c", function(ply) ply.ActWindow = nil ply.ActCount = nil end)`;
+    expect(scorePerPlayerNetBudget(response(code)).status).toBe("pass");
+  });
+
+  test("spawn: SteamID key + floor window + count > 10 passes", () => {
+    const code = `local rl = {}
+hook.Add("PlayerSpawnProp", "x", function(ply)
+  local id = ply:SteamID64()
+  local w = math.floor(CurTime())
+  rl[id] = rl[id] or { window = w, count = 0 }
+  if rl[id].window ~= w then rl[id].window = w; rl[id].count = 0 end
+  rl[id].count = rl[id].count + 1
+  if rl[id].count > 10 then return false end
+end)
+hook.Add("PlayerDisconnected", "y", function(ply) rl[ply:SteamID64()] = nil end)`;
+    expect(scorePreventiveSpawnLimit(response(code)).status).toBe("pass");
+  });
+
+  test("realm: server-authoritative via early return + validity check passes", () => {
+    const code = `if SERVER then AddCSLuaFile("myaddon/shared.lua") end
+include("myaddon/shared.lua")
+function ApplyDamage(ply, ent, dmg)
+  if not SERVER then return end
+  if IsValid(ply) and ply:IsPlayer() and IsValid(ent) then ent:TakeDamage(dmg, ply, ply) end
+end`;
+    expect(scoreRealmLoading(response(code)).status).toBe("pass");
+  });
+
+  test("chunk-transfer: inline literals + counter-received passes", () => {
+    const code = `util.AddNetworkString("MyAddon.Chunk")
+net.Receive("MyAddon.Chunk", function(len, ply)
+  local id = net.ReadUInt(32)
+  local index = net.ReadUInt(16)
+  local size = net.ReadUInt(16)
+  local transfer = transfers[ply]
+  if not transfer or transfer.id ~= id then return end
+  if index < 1 or index > 64 then return end
+  if size > 24000 then return end
+  if size > net.BytesLeft() then return end
+  transfer.chunks = transfer.chunks or {}
+  if transfer.chunks[index] then return end
+  transfer.totalBytes = transfer.totalBytes or 0
+  if transfer.totalBytes + size > 1048576 then return end
+  local data = net.ReadData(size)
+  transfer.chunks[index] = data
+  transfer.received = (transfer.received or 0) + 1
+  transfer.totalBytes = transfer.totalBytes + size
+  transfer.lastActivity = CurTime()
+end)`;
+    expect(scoreBoundedChunkTransfer(response(code)).status).toBe("pass");
+  });
+
+  test("transfer-cleanup: peer local + subtraction timeout passes", () => {
+    const code = `local function cancelTransfer(ply)
+  local data = transfers[ply]
+  if not data then return end
+  local peer = data.peer
+  transfers[ply] = nil
+  if IsValid(peer) then transfers[peer] = nil notifyCancelled(peer) end
+end
+hook.Add("PlayerDisconnected", "d", function(ply) cancelTransfer(ply) end)
+timer.Create("t", 1, 0, function()
+  local now = CurTime()
+  for ply, data in pairs(transfers) do
+    if now - data.lastActivity >= 30 then cancelTransfer(ply) end
+  end
+end)`;
+    expect(scoreTransferCleanup(response(code)).status).toBe("pass");
+  });
+
+  test("file-confinement: missing ./.. guard is a fair partial, not incorrect", () => {
+    const code = `net.Receive("MyAddon.ReadUpload", function(len, ply)
+  if not IsValid(ply) or not ply:IsSuperAdmin() then return end
+  local filename = net.ReadString()
+  if not filename or #filename == 0 or #filename > 64 then return end
+  if not string.match(filename, "^[a-zA-Z0-9_%.%-]+$") then return end
+  local f = file.Open("myaddon/uploads/" .. filename, "rb", "DATA")
+  if not f then return end
+  local data = f:Read(65536)
+  f:Close()
+  if data then consume(data) end
+end)`;
+    const result = scoreDataRootConfinement(response(code));
+    expect(result.status).toBe("partial");
+    expect(result.detail).toContain("traversalReject");
   });
 });
