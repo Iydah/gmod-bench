@@ -7,8 +7,8 @@
   "oracle": {
     "expectedPrimitive": "sql.QueryTyped parameter binding plus false/sql.LastError handling",
     "sourceUrls": ["https://wiki.facepunch.com/gmod/sql.QueryTyped", "https://wiki.facepunch.com/gmod/sql.LastError", "https://wiki.facepunch.com/gmod/sql.SQLStr"],
-    "verifiedAt": "2026-07-10",
-    "rubricVersion": "1"
+    "verifiedAt": "2026-07-11",
+    "rubricVersion": "2"
   },
   "scoring": { "kind": "plugin", "plugin": "sqlite-typed-write" }
 }

@@ -19,8 +19,8 @@
       "https://wiki.facepunch.com/gmod/util.Decompress",
       "https://wiki.facepunch.com/gmod/util.AddNetworkString"
     ],
-    "verifiedAt": "2026-07-10",
-    "rubricVersion": "1"
+    "verifiedAt": "2026-07-11",
+    "rubricVersion": "2"
   },
   "scoring": { "kind": "plugin", "plugin": "bounded-decompression" }
 }

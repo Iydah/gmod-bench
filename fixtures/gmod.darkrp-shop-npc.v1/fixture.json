@@ -7,8 +7,8 @@
     "codeFenceLanguage": "lua",
     "reasonPrefix": "Reason:",
     "maxReasonLines": 1,
-    "minCandidateLoops": 1,
-    "maxCandidateLoops": 3,
+    "minCandidateLoops": 0,
+    "maxCandidateLoops": 6,
     "maxAnswerBytes": 16384
   },
   "oracle": {
@@ -24,8 +24,8 @@
       "https://wiki.facepunch.com/gmod/GM:PlayerDisconnected",
       "https://wiki.facepunch.com/gmod/GM:EntityRemoved"
     ],
-    "verifiedAt": "2026-07-10",
-    "rubricVersion": "1"
+    "verifiedAt": "2026-07-11",
+    "rubricVersion": "2"
   },
   "scoring": { "kind": "plugin", "plugin": "shop-npc" }
 }

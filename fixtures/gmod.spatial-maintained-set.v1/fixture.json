@@ -7,8 +7,8 @@
   "oracle": {
     "expectedPrimitive": "cold ents.FindByClass seed, maintained entity set, and DistToSqr in the repeated hot loop",
     "sourceUrls": ["https://wiki.facepunch.com/gmod/ents.FindByClass", "https://wiki.facepunch.com/gmod/GM:OnEntityCreated", "https://wiki.facepunch.com/gmod/GM:EntityRemoved", "https://wiki.facepunch.com/gmod/Vector:DistToSqr", "https://wiki.facepunch.com/gmod/ents.FindInSphere"],
-    "verifiedAt": "2026-07-10",
-    "rubricVersion": "1"
+    "verifiedAt": "2026-07-11",
+    "rubricVersion": "2"
   },
   "scoring": { "kind": "plugin", "plugin": "spatial-cache" }
 }

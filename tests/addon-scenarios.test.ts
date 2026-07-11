@@ -19,6 +19,7 @@ import {
   scoreNetworkVarState,
 } from "../src/scoring/net-efficiency";
 import { scoreNetSecurity } from "../src/scoring/net-security";
+import { scoreBoundedDecompression } from "../src/scoring/net-bounds";
 import { scorePredictionEffect } from "../src/scoring/prediction";
 import { scoreRealmLoading } from "../src/scoring/realm-loading";
 import { scoreSpatialCache } from "../src/scoring/spatial-cache";
@@ -69,7 +70,8 @@ test("all production-addon fixtures load with current Facepunch provenance", asy
   );
   expect(fixtures).toHaveLength(scenarioIds.length);
   for (const fixture of fixtures) {
-    expect(fixture.oracle.verifiedAt).toBe("2026-07-10");
+    // A dated wiki-verification stamp; bumped when a rubric is re-verified.
+    expect(fixture.oracle.verifiedAt).toMatch(/^2026-07-\d{2}$/);
     expect(
       fixture.oracle.sourceUrls.some((url) =>
         url.startsWith("https://wiki.facepunch.com/gmod/"),
@@ -266,5 +268,67 @@ describe("realms, prediction, and SQLite", () => {
     ).toBe("incorrect");
     const batch = `sql.Begin() for i = 1, math.min(#rows, 500) do sql.QueryTyped("INSERT INTO scores VALUES(?, ?)", rows[i].id, rows[i].score) end sql.Commit()`;
     expect(scoreSqliteBatch(response(batch)).status).toBe("pass");
+  });
+});
+
+// Regression guards against idiom lock-in: these are correct answers (several
+// are verbatim published model answers) that the pre-2026-07-11 scorers wrongly
+// graded "incorrect" by matching one reference's exact variables and phrasing.
+describe("concept-based scoring accepts idiom variants", () => {
+  test("sql.SQLStr with error handling is safe-but-not-preferred (partial)", () => {
+    // Verbatim "Gemini 3.1 Pro (High)" answer — safe, correct, previously
+    // marked incorrect because it concatenates sql.SQLStr output.
+    const geminiSqlStr = `local safe_text = sql.SQLStr(text)
+local result = sql.Query("INSERT INTO notes(text) VALUES(" .. safe_text .. ")")
+if result == false then
+  ErrorNoHalt("Database Insertion Error: " .. sql.LastError() .. "\\n")
+end`;
+    expect(scoreSqliteTypedWrite(response(geminiSqlStr)).status).toBe(
+      "partial",
+    );
+  });
+
+  test("QueryTyped without error handling is partial, not pass", () => {
+    expect(
+      scoreSqliteTypedWrite(
+        response(`sql.QueryTyped("INSERT INTO notes(text) VALUES(?)", text)`),
+      ).status,
+    ).toBe("partial");
+  });
+
+  test("maintained spatial set passes under any set name and squared form", () => {
+    // Descriptive set name + precomputed squared radius (the common real idiom),
+    // previously failed because the scorer required `tracked` and `radius*radius`.
+    const owned = `local owned = {}
+local RADIUS_SQR = 500 * 500
+for _, ent in ipairs(ents.FindByClass("my_addon_ent")) do owned[ent] = true end
+hook.Add("OnEntityCreated", "a", function(ent) if ent:GetClass() == "my_addon_ent" then owned[ent] = true end end)
+hook.Add("EntityRemoved", "b", function(ent) owned[ent] = nil end)
+hook.Add("Think", "c", function()
+  local origin = target:GetPos()
+  for ent in pairs(owned) do
+    if IsValid(ent) and origin:DistToSqr(ent:GetPos()) <= RADIUS_SQR then use(ent) end
+  end
+end)`;
+    expect(scoreSpatialCache(response(owned)).status).toBe("pass");
+  });
+
+  test("bounded decompression passes with a bytes variable and type-check guard", () => {
+    // Verbatim "Gemini 3.1 Pro (High)" answer — textbook-correct; previously
+    // failed only for storing bytes in a variable and using type(d)=="string".
+    const geminiDecomp = `util.AddNetworkString("MyAddon.Upload")
+net.Receive("MyAddon.Upload", function(len, ply)
+  if not IsValid(ply) or not ply:IsAdmin() then return end
+  local compressedLen = math.floor(len / 8)
+  if compressedLen == 0 or compressedLen > 32768 then return end
+  local compressedData = net.ReadData(compressedLen)
+  local decoded = util.Decompress(compressedData, 262144)
+  if type(decoded) == "string" and decoded ~= "" then
+    consume(decoded)
+  end
+end)`;
+    expect(scoreBoundedDecompression(response(geminiDecomp)).status).toBe(
+      "pass",
+    );
   });
 });

@@ -378,7 +378,7 @@ test("new GMToolbox-inspired fixtures load and canonical answers pass", async ()
   );
   expect(fixtures).toHaveLength(fixtureIds.length);
   for (const fixture of fixtures) {
-    expect(fixture.oracle.verifiedAt).toBe("2026-07-10");
+    expect(fixture.oracle.verifiedAt).toMatch(/^2026-07-\d{2}$/);
     expect(
       fixture.oracle.sourceUrls.every((url) =>
         url.startsWith("https://wiki.facepunch.com/gmod/"),
