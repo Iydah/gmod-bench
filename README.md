@@ -4,18 +4,16 @@
   <img src="website/public/readme-hero.png" alt="gmod-bench — which AI model actually writes good GLua?" width="820" />
 </a>
 
-<h1>gmod-bench</h1>
-
 <p><strong>Find the best AI models for Garry's Mod development.</strong></p>
 
 <p>Open coding challenges&nbsp; ·&nbsp; deterministic scoring&nbsp; ·&nbsp; public evidence</p>
 
 <p>
-  <a href="https://gmodbench.com"><img src="https://img.shields.io/badge/Live_at-gmodbench.com-0081ff?style=for-the-badge&logo=cloudflare&logoColor=white&labelColor=0a0a0a" alt="Live at gmodbench.com" /></a>
-  <a href="https://github.com/Iydah/gmod-bench/stargazers"><img src="https://img.shields.io/github/stars/Iydah/gmod-bench?style=for-the-badge&logo=github&logoColor=white&color=f2b84b&labelColor=0a0a0a" alt="GitHub stars" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-42d392?style=for-the-badge&labelColor=0a0a0a" alt="License: MIT" /></a>
-  <a href="https://bun.sh"><img src="https://img.shields.io/badge/Bun-fbf0df?style=for-the-badge&logo=bun&logoColor=000&labelColor=0a0a0a" alt="Runtime: Bun" /></a>
-  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-70a3f3?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0a0a" alt="TypeScript" /></a>
+  <a href="https://gmodbench.com"><img src="https://img.shields.io/badge/Live-gmodbench.com-0070e0?style=for-the-badge&logo=cloudflare&logoColor=white&labelColor=0a0a0a" alt="Live at gmodbench.com" /></a>
+  <a href="https://github.com/Iydah/gmod-bench/stargazers"><img src="https://img.shields.io/github/stars/Iydah/gmod-bench?style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI%2BPHBhdGggZmlsbD0iI2YyYjg0YiIgZD0iTTggLjI1YS43NS43NSAwIDAgMSAuNjczLjQxOGwxLjg4MiAzLjgxNSA0LjIxLjYxMmEuNzUuNzUgMCAwIDEgLjQxNiAxLjI3OWwtMy4wNDYgMi45Ny43MTkgNC4xOTJhLjc1MS43NTEgMCAwIDEtMS4wODguNzkxTDggMTIuMzQ3bC0zLjc2NiAxLjk4YS43NS43NSAwIDAgMS0xLjA4OC0uNzlsLjcyLTQuMTk0TC44MTggNi4zNzRhLjc1Ljc1IDAgMCAxIC40MTYtMS4yOGw0LjIxLS42MTFMNy4zMjcuNjY4QS43NS43NSAwIDAgMSA4IC4yNVoiLz48L3N2Zz4=&color=f2b84b&labelColor=0a0a0a" alt="GitHub stars" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-6ee7b7?style=for-the-badge&labelColor=0a0a0a" alt="License: MIT" /></a>
+  <a href="https://bun.sh"><img src="https://img.shields.io/badge/Bun-fbf0df?style=for-the-badge&logo=bun&logoColor=fbf0df&labelColor=0a0a0a" alt="Runtime: Bun" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-9ec3f8?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0a0a" alt="TypeScript" /></a>
 </p>
 
 <p>
@@ -32,9 +30,9 @@
 
 <br />
 
-<a href="https://github.com/Iydah/gmod-bench/stargazers"><img src="https://img.shields.io/badge/⭐_Star_the_repo-if_it_helps_you_ship-0a0a0a?style=for-the-badge&labelColor=f2b84b" alt="Star the repo" /></a>
+<a href="https://github.com/Iydah/gmod-bench/stargazers"><img src="https://img.shields.io/badge/Star_the_repo-if_it_helps_you_ship-f2b84b?style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI%2BPHBhdGggZmlsbD0iI2YyYjg0YiIgZD0iTTggLjI1YS43NS43NSAwIDAgMSAuNjczLjQxOGwxLjg4MiAzLjgxNSA0LjIxLjYxMmEuNzUuNzUgMCAwIDEgLjQxNiAxLjI3OWwtMy4wNDYgMi45Ny43MTkgNC4xOTJhLjc1MS43NTEgMCAwIDEtMS4wODguNzkxTDggMTIuMzQ3bC0zLjc2NiAxLjk4YS43NS43NSAwIDAgMS0xLjA4OC0uNzlsLjcyLTQuMTk0TC44MTggNi4zNzRhLjc1Ljc1IDAgMCAxIC40MTYtMS4yOGw0LjIxLS42MTFMNy4zMjcuNjY4QS43NS43NSAwIDAgMSA4IC4yNVoiLz48L3N2Zz4=&labelColor=0a0a0a" alt="Star the repo" /></a>
 &nbsp;
-<a href="https://gmodbench.com"><img src="https://img.shields.io/badge/Open_the_leaderboard-→-ffffff?style=for-the-badge&logo=rocket&logoColor=white&color=0081ff&labelColor=0a0a0a" alt="Open the leaderboard" /></a>
+<a href="https://gmodbench.com"><img src="https://img.shields.io/badge/Open_the_leaderboard-gmodbench.com-0070e0?style=for-the-badge&labelColor=0a0a0a" alt="Open the leaderboard" /></a>
 
 </div>
 
@@ -347,9 +345,9 @@ Tests and CI do not call model providers.
 
 ### Built for GMod people who want a real answer.
 
-<a href="https://gmodbench.com"><img src="https://img.shields.io/badge/▶_Live_board-gmodbench.com-0081ff?style=for-the-badge&labelColor=0a0a0a" alt="Live board" /></a>
+<a href="https://gmodbench.com"><img src="https://img.shields.io/badge/Live_board-gmodbench.com-0070e0?style=for-the-badge&labelColor=0a0a0a" alt="Live board" /></a>
 &nbsp;
-<a href="https://github.com/Iydah/gmod-bench/stargazers"><img src="https://img.shields.io/github/stars/Iydah/gmod-bench?style=for-the-badge&logo=github&logoColor=white&color=f2b84b&labelColor=0a0a0a&label=Star" alt="Star on GitHub" /></a>
+<a href="https://github.com/Iydah/gmod-bench/stargazers"><img src="https://img.shields.io/github/stars/Iydah/gmod-bench?style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI%2BPHBhdGggZmlsbD0iI2YyYjg0YiIgZD0iTTggLjI1YS43NS43NSAwIDAgMSAuNjczLjQxOGwxLjg4MiAzLjgxNSA0LjIxLjYxMmEuNzUuNzUgMCAwIDEgLjQxNiAxLjI3OWwtMy4wNDYgMi45Ny43MTkgNC4xOTJhLjc1MS43NTEgMCAwIDEtMS4wODguNzkxTDggMTIuMzQ3bC0zLjc2NiAxLjk4YS43NS43NSAwIDAgMS0xLjA4OC0uNzlsLjcyLTQuMTk0TC44MTggNi4zNzRhLjc1Ljc1IDAgMCAxIC40MTYtMS4yOGw0LjIxLS42MTFMNy4zMjcuNjY4QS43NS43NSAwIDAgMSA4IC4yNVoiLz48L3N2Zz4=&color=f2b84b&labelColor=0a0a0a&label=Star" alt="Star on GitHub" /></a>
 
 <sub>MIT · open evidence · no vibes-only ranking</sub>
 
